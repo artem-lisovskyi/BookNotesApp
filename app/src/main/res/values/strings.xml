@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">BookNotes</string>
+
+    <string name="loading_failed">Failed to load</string>
+    <string name="retry">Retry</string>
+    <string name="loading">Loading</string>
+    <string name="content_description">Book</string>
+
+
+
+    <string name="logo">Logo</string>
+    <string name="start_searching_for_new_books">Start searching for new books</string>
+    <string name="search">Search</string>
+    <string name="poster">Poster</string>
+    <string name="title_not_found">Title not found</string>
+    <string name="authors_not_found">Authors not found</string>
+    <string name="published_date_not_found">Published date not found</string>
+
+
+</resources>
