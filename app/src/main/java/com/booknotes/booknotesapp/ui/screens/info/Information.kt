@@ -1,4 +1,4 @@
-package com.booknotes.booknotesapp.ui.screens
+package com.booknotes.booknotesapp.ui.screens.info
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,7 +13,7 @@ import com.booknotes.booknotesapp.ui.screens.home.MyTopAppBar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RecommendationsScreen(modifier: Modifier = Modifier) {
+fun InformationScreen(modifier: Modifier = Modifier, book: String?) {
     Scaffold(
         modifier = modifier.fillMaxSize(),
         topBar = { MyTopAppBar() }

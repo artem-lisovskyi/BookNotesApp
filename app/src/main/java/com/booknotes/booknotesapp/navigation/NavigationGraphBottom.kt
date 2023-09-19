@@ -1,14 +1,15 @@
 package com.booknotes.booknotesapp.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.booknotes.booknotesapp.ui.screens.FavoritesScreen
-import com.booknotes.booknotesapp.ui.screens.HomeScreen
-import com.booknotes.booknotesapp.ui.screens.InformationScreen
+import com.booknotes.booknotesapp.ui.screens.home.HomeScreen
+import com.booknotes.booknotesapp.ui.screens.info.InformationScreen
 import com.booknotes.booknotesapp.ui.screens.ProfileScreen
 import com.booknotes.booknotesapp.ui.screens.RecommendationsScreen
 
@@ -16,7 +17,7 @@ import com.booknotes.booknotesapp.ui.screens.RecommendationsScreen
 fun NavigationGraphBottom(navController: NavHostController) {
     NavHost(navController = navController, startDestination = DestinationsBottom.Home.route) {
         composable(DestinationsBottom.Home.route) {
-            HomeScreen(navController)
+            HomeScreen(navController = navController)
         }
         composable(DestinationsBottom.Favorites.route) {
             FavoritesScreen()
@@ -34,6 +35,7 @@ fun NavigationGraphBottom(navController: NavHostController) {
                 { type = NavType.StringType })
         ) {
             InformationScreen(
+                Modifier,
                 it
                     .arguments
                     ?.getString(DestinationsBottom.Information.argBookId)
