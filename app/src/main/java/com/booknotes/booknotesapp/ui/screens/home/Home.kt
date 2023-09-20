@@ -1,6 +1,5 @@
 package com.booknotes.booknotesapp.ui.screens.home
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -45,6 +44,7 @@ import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.booknotes.booknotesapp.data.Book
+import com.booknotes.booknotesapp.ui.MyTopAppBar
 import com.booknotes.booknotesapp.ui.screens.ErrorScreen
 import com.booknotes.booknotesapp.ui.screens.LoadingScreen
 import com.booknotesapp.booknotesapp.R
@@ -81,7 +81,7 @@ fun HomeScreen(
                         homeViewModel.getBooks(it)
                     }
                 )
-                Home(booksUiState = homeViewModel.booksUiState,
+                Home(homeUiState = homeViewModel.homeUiState,
                     retryAction = { homeViewModel.getBooks() },
                     onItemClick = {
                         homeViewModel.navigateToScreen(
@@ -97,45 +97,33 @@ fun HomeScreen(
 
 @Composable
 fun Home(
-    booksUiState: BooksUiState,
+    homeUiState: HomeUiState,
     retryAction: () -> Unit,
     onItemClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    when (booksUiState) {
-        is BooksUiState.Loading -> {
+    when (homeUiState) {
+        is HomeUiState.Loading -> {
             LoadingScreen(modifier)
         }
 
-        is BooksUiState.Success -> {
+        is HomeUiState.Success -> {
             ListBooks(
-                books = booksUiState.bookSearch,
+                books = homeUiState.bookSearch,
                 modifier = modifier,
                 onItemClick = onItemClick
             )
         }
 
-        is BooksUiState.Error -> {
+        is HomeUiState.Error -> {
             ErrorScreen(
                 retryAction = retryAction,
                 modifier = modifier
             )
         }
-
-
     }
 }
 
-@Composable
-fun MyTopAppBar() {
-    Row(modifier = Modifier.fillMaxWidth()) {
-        Image(
-            painter = painterResource(id = R.drawable.topbar),
-            contentDescription = stringResource(R.string.logo),
-            modifier = Modifier.padding(16.dp)
-        )
-    }
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -202,7 +190,8 @@ fun BookItem(
             .fillMaxWidth()
             .padding(start = 16.dp, end = 16.dp)
             .clickable {
-                book.id?.let { onItemClick(it) }
+                book.id?.let {
+                    onItemClick(it) }
             }
     ) {
 

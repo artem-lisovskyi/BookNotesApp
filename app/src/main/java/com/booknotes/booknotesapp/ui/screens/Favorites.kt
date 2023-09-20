@@ -9,7 +9,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.booknotes.booknotesapp.ui.screens.home.MyTopAppBar
+import com.booknotes.booknotesapp.ui.MyTopAppBar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

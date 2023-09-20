@@ -20,10 +20,10 @@ import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException
 
-sealed interface BooksUiState {
-    data class Success(val bookSearch: List<Book>) : BooksUiState
-    object Error : BooksUiState
-    object Loading : BooksUiState
+sealed interface HomeUiState {
+    data class Success(val bookSearch: List<Book>) : HomeUiState
+    object Error : HomeUiState
+    object Loading : HomeUiState
 }
 
 
@@ -31,29 +31,32 @@ class HomeViewModel(
     private val booksRepository: BooksRepository
 ) : ViewModel() {
 
-    var booksUiState: BooksUiState by mutableStateOf(BooksUiState.Loading)
+    var homeUiState: HomeUiState by mutableStateOf(HomeUiState.Loading)
         private set
 
-    private val _searchTextState: MutableState<String> =
-        mutableStateOf(value = "")
+
+    private val _searchTextState: MutableState<String> = mutableStateOf(value = "")
     val searchTextState: State<String> = _searchTextState
+
 
     init {
         getBooks()
     }
 
+
     fun getBooks(query: String = "book", maxResults: Int = 40) {
         viewModelScope.launch {
-            booksUiState = BooksUiState.Loading
-            booksUiState = try {
-                BooksUiState.Success(booksRepository.getBooks(query, maxResults))
+            homeUiState = HomeUiState.Loading
+            homeUiState = try {
+                HomeUiState.Success(booksRepository.getBooks(query, maxResults))
             } catch (e: IOException) {
-                BooksUiState.Error
+                HomeUiState.Error
             } catch (e: HttpException) {
-                BooksUiState.Error
+                HomeUiState.Error
             }
         }
     }
+
 
     fun updateSearchTextState(newValue: String) {
         _searchTextState.value = newValue

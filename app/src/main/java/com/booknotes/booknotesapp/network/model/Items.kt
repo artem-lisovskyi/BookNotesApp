@@ -4,7 +4,6 @@ import com.google.gson.annotations.SerializedName
 
 
 data class Items(
-
     @SerializedName("kind") var kind: String? = null,
     @SerializedName("id") var id: String? = null,
     @SerializedName("etag") var etag: String? = null,
