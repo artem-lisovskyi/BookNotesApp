@@ -1,6 +1,7 @@
 package com.booknotes.booknotesapp.ui.screens.information
 
 import androidx.compose.foundation.ScrollState
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -10,7 +11,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -49,7 +53,7 @@ fun InformationScreen(
         modifier = modifier.fillMaxSize(),
         topBar = {
             MyTopAppBarWithBackButton(
-                modifier = modifier,
+                modifier = Modifier,
                 onBackClick = { infoViewModel.backNavigation(navController = navController) }
             )
         }) {
@@ -126,26 +130,18 @@ fun DetailedInfo(
                         text = it,
                         fontWeight = FontWeight.Bold,
                         fontSize = 18.sp,
-                        color = Color.White,
+                        color = Color.Gray,
                         maxLines = 3,
                         overflow = TextOverflow.Ellipsis,
                         modifier = Modifier.fillMaxWidth()
                     )
                 }
                 book.authors?.let { listAuthors ->
-                    Text(
-                        text = "Authors: ",
-                        fontSize = 12.sp,
-                        color = Color.White,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 8.dp)
-                    )
                     listAuthors.map {
                         Text(
                             text = it,
-                            fontSize = 12.sp,
-                            color = Color.White,
+                            fontSize = 14.sp,
+                            color = Color.Gray,
                             maxLines = 2,
                             overflow = TextOverflow.Ellipsis,
                             modifier = Modifier.fillMaxWidth()
@@ -155,8 +151,8 @@ fun DetailedInfo(
                 book.publishedDate?.let {
                     Text(
                         text = "Published date:\n$it",
-                        fontSize = 12.sp,
-                        color = Color.White,
+                        fontSize = 14.sp,
+                        color = Color.Gray,
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(top = 16.dp)
@@ -167,18 +163,17 @@ fun DetailedInfo(
                     if (categoriesList.isNotEmpty()) {
                         Text(
                             text = categoriesList[0],
-                            fontSize = 10.sp,
-                            color = Color.White,
+                            fontSize = 12.sp,
+                            color = Color.Gray,
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(top = 8.dp)
                         )
                     }
                 }
-
-
             }
         }
+        MenuItem()
         book.description?.let {
             Text(
                 text = Pattern
@@ -189,11 +184,70 @@ fun DetailedInfo(
                     )
                     .replaceAll(""),
                 fontSize = 16.sp,
-                color = Color.White,
-                modifier = Modifier
+                color = Color.Gray,
+                modifier = modifier
                     .fillMaxWidth()
-                    .padding(top = 24.dp, bottom = 75.dp)
+                    .padding(top = 24.dp)
             )
         }
+    }
+}
+
+@Composable
+fun MenuItem(modifier: Modifier = Modifier) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(top = 8.dp)
+    ) {
+        Column(modifier = modifier.clickable { }) {
+            Icon(
+                imageVector = Icons.Default.FavoriteBorder,
+                contentDescription = stringResource(R.string.don_t_favorite),
+                modifier = modifier
+                    .size(50.dp)
+            )
+            Text(
+                text = "Add to favorite",
+                fontSize = 8.sp,
+                color = Color.Gray,
+                modifier = Modifier
+                    .padding(top = 8.dp)
+            )
+        }
+
+//        Column(modifier = modifier.clickable { }) {
+//            Icon(
+//                imageVector = Icons.Default.Check,
+//                contentDescription = stringResource(R.string.don_t_favorite),
+//                modifier = modifier
+//                    .size(50.dp)
+//            )
+//            Text(
+//                text = "Mark as read",
+//                fontSize = 8.sp,
+//                color = Color.White,
+//                modifier = Modifier
+//                    .padding(top = 8.dp)
+//            )
+//        }
+//
+//        Column(modifier = modifier.clickable { }) {
+//
+//
+//            Icon(
+//                imageVector = Icons.Default.ArrowForward,
+//                contentDescription = stringResource(R.string.don_t_favorite),
+//                modifier = modifier
+//                    .size(50.dp)
+//            )
+//            Text(
+//                text = "Go to website",
+//                fontSize = 8.sp,
+//                color = Color.White,
+//                modifier = Modifier
+//                    .padding(top = 8.dp)
+//            )
+//        }
     }
 }

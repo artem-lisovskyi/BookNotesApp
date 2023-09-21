@@ -72,7 +72,6 @@ fun HomeScreen(
             Column {
                 TextField(
                     homeViewModel = homeViewModel,
-                    modifier = modifier,
                     search = searchTextState.value,
                     onTextChange = {
                         homeViewModel.updateSearchTextState(newValue = it)
@@ -129,7 +128,6 @@ fun Home(
 @Composable
 fun TextField(
     homeViewModel: HomeViewModel,
-    modifier: Modifier = Modifier,
     search: String,
     onTextChange: (String) -> Unit,
     onSearchClicked: (String) -> Unit
@@ -153,11 +151,12 @@ fun TextField(
                 )
             }
         },
+        maxLines = 1,
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
         keyboardActions = KeyboardActions(onSearch = { homeViewModel.getBooks(search) }),
-        modifier = modifier
+        modifier = Modifier
             .fillMaxWidth()
-            .padding(start = 16.dp, end = 16.dp, bottom = 16.dp, top = 32.dp)
+            .padding(start = 16.dp, end = 16.dp, bottom = 8.dp, top = 24.dp)
     )
 }
 
@@ -168,9 +167,9 @@ fun ListBooks(
     onItemClick: (String) -> Unit
 ) {
     LazyColumn(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxHeight()
-            .padding(top = 20.dp, bottom = 70.dp)
+            .padding(top = 16.dp)
     ) {
         itemsIndexed(books) { _, book ->
             BookItem(book, modifier, onItemClick)
@@ -226,7 +225,7 @@ fun BookItem(
                     text = it,
                     fontWeight = FontWeight.Bold,
                     fontSize = 18.sp,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = modifier.fillMaxWidth()
                 )
             }
             book.authors?.let { listAuthors ->
@@ -240,7 +239,7 @@ fun BookItem(
             book.publishedDate?.let {
                 Text(
                     text = it,
-                    modifier = Modifier
+                    modifier = modifier
                         .padding(top = 16.dp)
                         .fillMaxWidth()
                 )

@@ -34,7 +34,7 @@ fun MyTopAppBarWithBackButton(
     Row(modifier = modifier.fillMaxWidth()) {
         Icon(
             imageVector = Icons.Default.ArrowBack,
-            contentDescription = "",
+            contentDescription = stringResource(R.string.backbutton),
             modifier = modifier
                 .padding(start = 16.dp, top = 16.dp)
                 .clickable { onBackClick() }

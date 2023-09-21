@@ -4,8 +4,11 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.material.Scaffold
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
 import com.booknotes.booknotesapp.navigation.MyBottomNavigation
 import com.booknotes.booknotesapp.navigation.NavigationGraphBottom
@@ -21,6 +24,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+@OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun MyNavigation() {
@@ -28,6 +32,6 @@ fun MyNavigation() {
     Scaffold(
         bottomBar = { MyBottomNavigation(navController = navController) }
     ) {
-        NavigationGraphBottom(navController = navController)
+        NavigationGraphBottom(navController = navController, Modifier.padding(it))
     }
 }
