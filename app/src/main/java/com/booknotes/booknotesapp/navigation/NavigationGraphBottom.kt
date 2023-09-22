@@ -1,7 +1,8 @@
 package com.booknotes.booknotesapp.navigation
 
 import android.app.Activity.RESULT_OK
-import android.util.Log
+import android.content.Context
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -32,6 +33,7 @@ fun NavigationGraphBottom(
     navController: NavHostController,
     googleAuthUiClient: GoogleAuthUiClient,
     lifecycleScope: CoroutineScope,
+    appContext: Context,
     modifier: Modifier = Modifier
 ) {
 
@@ -59,6 +61,7 @@ fun NavigationGraphBottom(
                     lifecycleScope.launch {
                         googleAuthUiClient.signOut()
                     }
+                    Toast.makeText(appContext, "Successful sign out", Toast.LENGTH_SHORT).show()
                     navController.navigate(DestinationsBottom.Onboarding.route)
                 },
                 modifier = modifier
@@ -67,11 +70,6 @@ fun NavigationGraphBottom(
         composable(DestinationsBottom.Onboarding.route) {
             val viewModel = viewModel<SignInViewModel>()
             val state by viewModel.state.collectAsState()
-            LaunchedEffect(key1 = Unit) {
-                if (googleAuthUiClient.getSignedInUser() != null) {
-                    navController.navigate(DestinationsBottom.Home.route)
-                }
-            }
             val launcher = rememberLauncherForActivityResult(
                 contract = ActivityResultContracts.StartIntentSenderForResult(),
                 onResult = { result ->
@@ -87,7 +85,7 @@ fun NavigationGraphBottom(
 
             LaunchedEffect(key1 = state.isSignInSuccessful){
                 if (state.isSignInSuccessful) {
-                    Log.i("SIGN IN", "SUCCESSFULL")
+                    Toast.makeText(appContext, "Successful sign in", Toast.LENGTH_SHORT).show()
                     navController.navigate(DestinationsBottom.Profile.route)
                     viewModel.resetState()
                 }

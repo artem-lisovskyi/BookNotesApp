@@ -1,6 +1,7 @@
 package com.booknotes.booknotesapp
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -30,7 +31,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             BookNotesTheme {
-                MyNavigation(googleAuthUiClient)
+                MyNavigation(googleAuthUiClient, applicationContext)
             }
         }
     }
@@ -39,14 +40,17 @@ class MainActivity : ComponentActivity() {
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
-fun MyNavigation(googleAuthUiClient: GoogleAuthUiClient) {
+fun MyNavigation(googleAuthUiClient: GoogleAuthUiClient, appContext: Context) {
     val navController = rememberNavController()
     Scaffold(
         bottomBar = { MyBottomNavigation(navController = navController) }
     ) {
         NavigationGraphBottom(
-            navController = navController, googleAuthUiClient,
-            CoroutineScope(Dispatchers.Default), Modifier.padding(it)
+            navController = navController,
+            googleAuthUiClient = googleAuthUiClient,
+            lifecycleScope = CoroutineScope(Dispatchers.Default),
+            appContext = appContext,
+            modifier = Modifier.padding(it)
         )
     }
 }
