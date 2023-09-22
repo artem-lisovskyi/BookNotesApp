@@ -1,4 +1,4 @@
-package com.booknotes.booknotesapp.ui.screens
+package com.booknotes.booknotesapp.ui.screens.presentation
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
