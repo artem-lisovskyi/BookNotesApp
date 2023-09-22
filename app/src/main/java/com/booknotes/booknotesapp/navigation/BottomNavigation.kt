@@ -19,10 +19,10 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 @Composable
 fun MyBottomNavigation(navController: NavHostController) {
     val items = listOf(
-        Destinations.Home,
-        Destinations.Favorites,
-        Destinations.Recommendations,
-        Destinations.Profile
+        DestinationsBottom.Home,
+        DestinationsBottom.Favorites,
+        DestinationsBottom.Recommendations,
+        DestinationsBottom.Profile
     )
     BottomNavigation(
         backgroundColor = Color.DarkGray,

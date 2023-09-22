@@ -35,22 +35,43 @@ fun NavigationGraphBottom(
     modifier: Modifier = Modifier
 ) {
 
-    NavHost(navController = navController, startDestination = Destinations.Onboarding.route) {
-        composable(Destinations.Home.route) {
+    NavHost(
+        navController = navController,
+        startDestination = if (googleAuthUiClient.getSignedInUser() != null) {
+            DestinationsBottom.Home.route
+        } else {
+            DestinationsBottom.Onboarding.route
+        }
+    ) {
+        composable(DestinationsBottom.Home.route) {
             HomeScreen(navController = navController, modifier = modifier)
         }
-        composable(Destinations.Favorites.route) {
+        composable(DestinationsBottom.Favorites.route) {
             FavoritesScreen(modifier)
         }
-        composable(Destinations.Recommendations.route) {
+        composable(DestinationsBottom.Recommendations.route) {
             RecommendationsScreen(modifier)
         }
-        composable(Destinations.Profile.route) {
-            ProfileScreen(modifier)
+        composable(DestinationsBottom.Profile.route) {
+            ProfileScreen(
+                userData = googleAuthUiClient.getSignedInUser(),
+                onSignOut = {
+                    lifecycleScope.launch {
+                        googleAuthUiClient.signOut()
+                    }
+                    navController.navigate(DestinationsBottom.Onboarding.route)
+                },
+                modifier = modifier
+            )
         }
-        composable(Destinations.Onboarding.route) {
+        composable(DestinationsBottom.Onboarding.route) {
             val viewModel = viewModel<SignInViewModel>()
             val state by viewModel.state.collectAsState()
+            LaunchedEffect(key1 = Unit) {
+                if (googleAuthUiClient.getSignedInUser() != null) {
+                    navController.navigate(DestinationsBottom.Home.route)
+                }
+            }
             val launcher = rememberLauncherForActivityResult(
                 contract = ActivityResultContracts.StartIntentSenderForResult(),
                 onResult = { result ->
@@ -65,8 +86,10 @@ fun NavigationGraphBottom(
                 })
 
             LaunchedEffect(key1 = state.isSignInSuccessful){
-                if (state.isSignInSuccessful){
+                if (state.isSignInSuccessful) {
                     Log.i("SIGN IN", "SUCCESSFULL")
+                    navController.navigate(DestinationsBottom.Profile.route)
+                    viewModel.resetState()
                 }
             }
 
@@ -86,16 +109,16 @@ fun NavigationGraphBottom(
 
         }
         composable(
-            Destinations.Information.route + "/{${Destinations.Information.argBookId}}",
+            DestinationsBottom.Information.route + "/{${DestinationsBottom.Information.argBookId}}",
             arguments = listOf(
-                navArgument(Destinations.Information.argBookId)
+                navArgument(DestinationsBottom.Information.argBookId)
                 { type = NavType.StringType })
         ) {
             InformationScreen(
                 modifier = modifier,
                 bookId = it
                     .arguments
-                    ?.getString(Destinations.Information.argBookId),
+                    ?.getString(DestinationsBottom.Information.argBookId),
                 navController = navController
             )
         }

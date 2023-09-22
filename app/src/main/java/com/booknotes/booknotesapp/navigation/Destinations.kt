@@ -3,18 +3,18 @@ package com.booknotes.booknotesapp.navigation
 import com.booknotesapp.booknotesapp.R
 
 
-sealed class Destinations(
+sealed class DestinationsBottom(
     var title: String,
     var icon: Int = 0,
     var route: String
 ) {
-    object Home : Destinations("Home", R.drawable.ic_home, "home")
-    object Favorites : Destinations("Favorites", R.drawable.ic_favorite, "favorites")
-    object Recommendations : Destinations("For you", R.drawable.ic_recommendations, "For you")
-    object Profile : Destinations("Profile", R.drawable.ic_profile, "profile")
-    object Information : Destinations(title = "Information", route = "info") {
+    object Home : DestinationsBottom("Home", R.drawable.ic_home, "home")
+    object Favorites : DestinationsBottom("Favorites", R.drawable.ic_favorite, "favorites")
+    object Recommendations : DestinationsBottom("For you", R.drawable.ic_recommendations, "For you")
+    object Profile : DestinationsBottom("Profile", R.drawable.ic_profile, "profile")
+    object Information : DestinationsBottom(title = "Information", route = "info") {
         const val argBookId = "bookId"
     }
 
-    object Onboarding : Destinations(title = "Onboarding", route = "onboarding")
+    object Onboarding : DestinationsBottom(title = "Onboarding", route = "onboarding")
 }

@@ -15,7 +15,7 @@ import androidx.navigation.NavHostController
 import com.booknotes.booknotesapp.BooksApplication
 import com.booknotes.booknotesapp.data.Book
 import com.booknotes.booknotesapp.data.BooksRepository
-import com.booknotes.booknotesapp.navigation.Destinations
+import com.booknotes.booknotesapp.navigation.DestinationsBottom
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException
@@ -63,7 +63,7 @@ class HomeViewModel(
     }
 
     fun navigateToScreen(
-        screenRoute: String = Destinations.Information.route,
+        screenRoute: String = DestinationsBottom.Information.route,
         navController: NavHostController,
         bookId: String
     ) {
