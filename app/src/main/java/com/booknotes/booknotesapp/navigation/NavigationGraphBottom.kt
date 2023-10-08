@@ -49,10 +49,10 @@ fun NavigationGraphBottom(
             HomeScreen(navController = navController, modifier = modifier)
         }
         composable(DestinationsBottom.Favorites.route) {
-            FavoritesScreen(modifier)
+            FavoritesScreen(navController,modifier)
         }
         composable(DestinationsBottom.Recommendations.route) {
-            RecommendationsScreen(modifier)
+            RecommendationsScreen(navController,modifier)
         }
         composable(DestinationsBottom.Profile.route) {
             ProfileScreen(
@@ -64,6 +64,7 @@ fun NavigationGraphBottom(
                     Toast.makeText(appContext, "Successful sign out", Toast.LENGTH_SHORT).show()
                     navController.navigate(DestinationsBottom.Onboarding.route)
                 },
+                navController = navController,
                 modifier = modifier
             )
         }

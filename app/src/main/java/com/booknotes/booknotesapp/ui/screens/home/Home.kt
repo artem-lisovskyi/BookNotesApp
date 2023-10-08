@@ -44,6 +44,7 @@ import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.booknotes.booknotesapp.data.Book
+import com.booknotes.booknotesapp.navigation.MyBottomNavigation
 import com.booknotes.booknotesapp.ui.MyTopAppBar
 import com.booknotes.booknotesapp.ui.screens.ErrorScreen
 import com.booknotes.booknotesapp.ui.screens.LoadingScreen
@@ -61,7 +62,8 @@ fun HomeScreen(
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
-        topBar = { MyTopAppBar() }
+        topBar = { MyTopAppBar() },
+        bottomBar = { MyBottomNavigation(navController = navController)}
     ) {
         Surface(
             modifier = Modifier
@@ -190,7 +192,8 @@ fun BookItem(
             .padding(start = 16.dp, end = 16.dp)
             .clickable {
                 book.id?.let {
-                    onItemClick(it) }
+                    onItemClick(it)
+                }
             }
     ) {
 

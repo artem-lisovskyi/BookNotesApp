@@ -11,7 +11,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
-import com.booknotes.booknotesapp.navigation.MyBottomNavigation
 import com.booknotes.booknotesapp.navigation.NavigationGraphBottom
 import com.booknotes.booknotesapp.signIn.GoogleAuthUiClient
 import com.booknotes.booknotesapp.ui.theme.BookNotesTheme
@@ -43,7 +42,7 @@ class MainActivity : ComponentActivity() {
 fun MyNavigation(googleAuthUiClient: GoogleAuthUiClient, appContext: Context) {
     val navController = rememberNavController()
     Scaffold(
-        bottomBar = { MyBottomNavigation(navController = navController) }
+        //bottomBar = { MyBottomNavigation(navController = navController) }
     ) {
         NavigationGraphBottom(
             navController = navController,

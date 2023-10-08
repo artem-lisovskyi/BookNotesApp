@@ -9,14 +9,18 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavHostController
+import com.booknotes.booknotesapp.navigation.MyBottomNavigation
 import com.booknotes.booknotesapp.ui.MyTopAppBar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RecommendationsScreen(modifier: Modifier = Modifier) {
+fun RecommendationsScreen(navController: NavHostController, modifier: Modifier = Modifier) {
     Scaffold(
         modifier = modifier.fillMaxSize(),
-        topBar = { MyTopAppBar() }
+        topBar = { MyTopAppBar() },
+        bottomBar = { MyBottomNavigation(navController = navController) }
+
     ) {
         Surface(
             modifier = Modifier
