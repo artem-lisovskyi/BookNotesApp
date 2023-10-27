@@ -9,8 +9,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
+import com.booknotes.booknotesapp.navigation.MyBottomNavigation
 import com.booknotes.booknotesapp.navigation.NavigationGraphBottom
 import com.booknotes.booknotesapp.signIn.GoogleAuthUiClient
 import com.booknotes.booknotesapp.ui.theme.BookNotesTheme
@@ -25,6 +27,7 @@ class MainActivity : ComponentActivity() {
             oneTapClient = Identity.getSignInClient(applicationContext)
         )
     }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,15 +44,22 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MyNavigation(googleAuthUiClient: GoogleAuthUiClient, appContext: Context) {
     val navController = rememberNavController()
+    val bottomNav:@Composable () -> Unit = remember{ @Composable { MyBottomNavigation(navController = navController) }}
+
     Scaffold(
-        //bottomBar = { MyBottomNavigation(navController = navController) }
+       // bottomBar = { MyBottomNavigation(navController = navController) }
     ) {
         NavigationGraphBottom(
             navController = navController,
             googleAuthUiClient = googleAuthUiClient,
             lifecycleScope = CoroutineScope(Dispatchers.Default),
             appContext = appContext,
+            bottomNav = bottomNav,
             modifier = Modifier.padding(it)
         )
     }
 }
+
+
+
+

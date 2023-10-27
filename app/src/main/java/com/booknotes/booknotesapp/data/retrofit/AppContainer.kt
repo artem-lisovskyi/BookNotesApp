@@ -1,11 +1,11 @@
-package com.booknotes.booknotesapp.data
+package com.booknotes.booknotesapp.data.retrofit
 
 import com.booknotes.booknotesapp.network.BooksApi
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 interface AppContainer {
-    val booksRepository: BooksRepository
+    val booksRepositoryRetrofit: BooksRepositoryRetrofit
 }
 
 class DefaultAppContainer : AppContainer {
@@ -20,7 +20,7 @@ class DefaultAppContainer : AppContainer {
         retrofit.create(BooksApi::class.java)
     }
 
-    override val booksRepository: BooksRepository by lazy {
+    override val booksRepositoryRetrofit: BooksRepositoryRetrofit by lazy {
         NetworkBooksRepository(retrofitService)
     }
 }

@@ -1,15 +1,15 @@
-package com.booknotes.booknotesapp.data
+package com.booknotes.booknotesapp.data.retrofit
 
 import com.booknotes.booknotesapp.network.BooksApi
 
-interface BooksRepository{
+interface BooksRepositoryRetrofit{
     suspend fun getBooks(query: String, maxResults: Int): List<Book>
     suspend fun getBookById(bookId: String): Book
 }
 
 class NetworkBooksRepository(
     private val bookApi: BooksApi
-) : BooksRepository {
+) : BooksRepositoryRetrofit {
     override suspend fun getBooks(
         query: String,
         maxResults: Int

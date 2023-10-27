@@ -1,4 +1,4 @@
-package com.booknotes.booknotesapp.data
+package com.booknotes.booknotesapp.data.retrofit
 
 data class Book(
     val id: String?,

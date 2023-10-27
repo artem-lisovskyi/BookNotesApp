@@ -13,8 +13,8 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.navigation.NavHostController
 import com.booknotes.booknotesapp.BooksApplication
-import com.booknotes.booknotesapp.data.Book
-import com.booknotes.booknotesapp.data.BooksRepository
+import com.booknotes.booknotesapp.data.retrofit.Book
+import com.booknotes.booknotesapp.data.retrofit.BooksRepositoryRetrofit
 import com.booknotes.booknotesapp.navigation.DestinationsBottom
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
@@ -28,7 +28,7 @@ sealed interface HomeUiState {
 
 
 class HomeViewModel(
-    private val booksRepository: BooksRepository
+    private val booksRepositoryRetrofit: BooksRepositoryRetrofit
 ) : ViewModel() {
 
     var homeUiState: HomeUiState by mutableStateOf(HomeUiState.Loading)
@@ -48,7 +48,7 @@ class HomeViewModel(
         viewModelScope.launch {
             homeUiState = HomeUiState.Loading
             homeUiState = try {
-                HomeUiState.Success(booksRepository.getBooks(query, maxResults))
+                HomeUiState.Success(booksRepositoryRetrofit.getBooks(query, maxResults))
             } catch (e: IOException) {
                 HomeUiState.Error
             } catch (e: HttpException) {
@@ -75,8 +75,8 @@ class HomeViewModel(
         val Factory: ViewModelProvider.Factory = viewModelFactory {
             initializer {
                 val application = (this[APPLICATION_KEY] as BooksApplication)
-                val booksRepository = application.container.booksRepository
-                HomeViewModel(booksRepository = booksRepository)
+                val booksRepository = application.container.booksRepositoryRetrofit
+                HomeViewModel(booksRepositoryRetrofit = booksRepository)
             }
         }
     }

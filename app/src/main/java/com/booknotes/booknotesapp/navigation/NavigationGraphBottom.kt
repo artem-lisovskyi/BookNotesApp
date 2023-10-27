@@ -18,13 +18,13 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.booknotes.booknotesapp.signIn.GoogleAuthUiClient
-import com.booknotes.booknotesapp.ui.screens.FavoritesScreen
-import com.booknotes.booknotesapp.ui.screens.RecommendationsScreen
+import com.booknotes.booknotesapp.ui.screens.favourites.FavoritesScreen
 import com.booknotes.booknotesapp.ui.screens.home.HomeScreen
 import com.booknotes.booknotesapp.ui.screens.information.InformationScreen
 import com.booknotes.booknotesapp.ui.screens.presentation.OnboardingScreen
 import com.booknotes.booknotesapp.ui.screens.presentation.ProfileScreen
 import com.booknotes.booknotesapp.ui.screens.presentation.SignInViewModel
+import com.booknotes.booknotesapp.ui.screens.recommendations.RecommendationsScreen
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -34,6 +34,7 @@ fun NavigationGraphBottom(
     googleAuthUiClient: GoogleAuthUiClient,
     lifecycleScope: CoroutineScope,
     appContext: Context,
+    bottomNav: @Composable () -> Unit,
     modifier: Modifier = Modifier
 ) {
 
@@ -46,13 +47,13 @@ fun NavigationGraphBottom(
         }
     ) {
         composable(DestinationsBottom.Home.route) {
-            HomeScreen(navController = navController, modifier = modifier)
+            HomeScreen(navController = navController, modifier = modifier, bottomNav = bottomNav)
         }
         composable(DestinationsBottom.Favorites.route) {
-            FavoritesScreen(navController,modifier)
+            FavoritesScreen(navController, modifier, bottomNav = bottomNav)
         }
         composable(DestinationsBottom.Recommendations.route) {
-            RecommendationsScreen(navController,modifier)
+            RecommendationsScreen(navController, modifier, bottomNav = bottomNav)
         }
         composable(DestinationsBottom.Profile.route) {
             ProfileScreen(
@@ -65,8 +66,10 @@ fun NavigationGraphBottom(
                     navController.navigate(DestinationsBottom.Onboarding.route)
                 },
                 navController = navController,
-                modifier = modifier
+                modifier = modifier,
+                bottomNav = bottomNav
             )
+            
         }
         composable(DestinationsBottom.Onboarding.route) {
             val viewModel = viewModel<SignInViewModel>()

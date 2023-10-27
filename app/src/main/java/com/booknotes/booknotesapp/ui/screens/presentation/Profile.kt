@@ -26,7 +26,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
-import com.booknotes.booknotesapp.navigation.MyBottomNavigation
 import com.booknotes.booknotesapp.signIn.UserData
 import com.booknotes.booknotesapp.ui.MyTopAppBar
 
@@ -36,12 +35,13 @@ fun ProfileScreen(
     userData: UserData?,
     onSignOut: () -> Unit,
     navController: NavHostController,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    bottomNav: @Composable () -> Unit
 ) {
     Scaffold(
         modifier = modifier.fillMaxSize(),
         topBar = { MyTopAppBar() },
-        bottomBar = { MyBottomNavigation(navController = navController) }
+        bottomBar =bottomNav//{ MyBottomNavigation(navController = navController) }
     ) {
         Surface(
             modifier = Modifier

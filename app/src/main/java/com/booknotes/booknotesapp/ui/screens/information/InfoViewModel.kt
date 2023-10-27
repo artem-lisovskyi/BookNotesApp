@@ -10,8 +10,8 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.navigation.NavHostController
 import com.booknotes.booknotesapp.BooksApplication
-import com.booknotes.booknotesapp.data.Book
-import com.booknotes.booknotesapp.data.BooksRepository
+import com.booknotes.booknotesapp.data.retrofit.Book
+import com.booknotes.booknotesapp.data.retrofit.BooksRepositoryRetrofit
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException
@@ -23,7 +23,7 @@ sealed interface InfoUiState {
 }
 
 class InfoViewModel(
-    private val booksRepository: BooksRepository
+    private val booksRepositoryRetrofit: BooksRepositoryRetrofit
 ) : ViewModel() {
 
     var infoUiState: InfoUiState by mutableStateOf(InfoUiState.Loading)
@@ -32,7 +32,7 @@ class InfoViewModel(
     fun getBookById(bookId: String = "") {
         viewModelScope.launch {
             infoUiState = try {
-                InfoUiState.Success(booksRepository.getBookById(bookId))
+                InfoUiState.Success(booksRepositoryRetrofit.getBookById(bookId))
             } catch (e: IOException) {
                 InfoUiState.Error
             } catch (e: HttpException) {
@@ -50,8 +50,8 @@ class InfoViewModel(
             initializer {
                 val application =
                     (this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as BooksApplication)
-                val booksRepository = application.container.booksRepository
-                InfoViewModel(booksRepository = booksRepository)
+                val booksRepository = application.container.booksRepositoryRetrofit
+                InfoViewModel(booksRepositoryRetrofit = booksRepository)
             }
         }
     }

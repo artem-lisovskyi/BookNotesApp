@@ -43,8 +43,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import com.booknotes.booknotesapp.data.Book
-import com.booknotes.booknotesapp.navigation.MyBottomNavigation
+import com.booknotes.booknotesapp.data.retrofit.Book
 import com.booknotes.booknotesapp.ui.MyTopAppBar
 import com.booknotes.booknotesapp.ui.screens.ErrorScreen
 import com.booknotes.booknotesapp.ui.screens.LoadingScreen
@@ -54,7 +53,8 @@ import com.booknotesapp.booknotesapp.R
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
-    navController: NavHostController
+    navController: NavHostController,
+    bottomNav: @Composable () -> Unit
 ) {
     val homeViewModel: HomeViewModel =
         viewModel(factory = HomeViewModel.Factory)
@@ -63,7 +63,7 @@ fun HomeScreen(
     Scaffold(
         modifier = modifier.fillMaxSize(),
         topBar = { MyTopAppBar() },
-        bottomBar = { MyBottomNavigation(navController = navController)}
+        bottomBar = bottomNav// { MyBottomNavigation(navController = navController)}
     ) {
         Surface(
             modifier = Modifier
