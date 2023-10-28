@@ -15,7 +15,7 @@ class NetworkBooksRepository(
         maxResults: Int
     ): List<Book> = bookApi.searchBook(query, maxResults).items.map { items ->
         Book(
-            id = items.id,
+            id = items.id!!,
             title = items.volumeInfo?.title,
             authors = items.volumeInfo?.authors,
             publishedDate = items.volumeInfo?.publishedDate,
@@ -30,7 +30,7 @@ class NetworkBooksRepository(
     override suspend fun getBookById(bookId: String): Book {
         val bookItem = bookApi.searchBookById(volumeId = bookId.drop(1).dropLast(1))
         return Book(
-            id = bookItem.id,
+            id = bookItem.id!!,
             title = bookItem.volumeInfo?.title,
             authors = bookItem.volumeInfo?.authors,
             publishedDate = bookItem.volumeInfo?.publishedDate,

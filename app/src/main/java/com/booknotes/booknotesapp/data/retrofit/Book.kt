@@ -1,7 +1,11 @@
 package com.booknotes.booknotesapp.data.retrofit
 
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+
+@Entity(tableName = "favourite_books")
 data class Book(
-    val id: String?,
+    @PrimaryKey val id: String,
     val title: String?,
     val authors: List<String>?,
     val publishedDate: String?,

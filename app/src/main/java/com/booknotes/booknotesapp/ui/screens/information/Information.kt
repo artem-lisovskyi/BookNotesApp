@@ -1,5 +1,6 @@
 package com.booknotes.booknotesapp.ui.screens.information
 
+import android.util.Log
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -20,6 +21,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -45,6 +47,8 @@ import com.booknotes.booknotesapp.ui.screens.LoadingScreen
 import com.booknotesapp.booknotesapp.R
 import java.util.regex.Pattern
 
+private var isFavourite = false
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun InformationScreen(
@@ -53,7 +57,14 @@ fun InformationScreen(
     navController: NavHostController
 ) {
     val infoViewModel: InfoViewModel = viewModel(factory = InfoViewModel.Factory)
-    infoViewModel.getBookById(bookId!!)
+    infoViewModel.getInfoUiStateByBookId(bookId!!)
+    var bookItem by remember { mutableStateOf<Book?>(null) }
+
+    LaunchedEffect(Unit) {
+        val book = infoViewModel.getBookById(bookId)
+        bookItem = book
+    }
+
     Scaffold(
         modifier = modifier.fillMaxSize(),
         topBar = {
@@ -71,7 +82,19 @@ fun InformationScreen(
             Column {
                 Info(infoUiState = infoViewModel.infoUiState,
                     scrollState = rememberScrollState(),
-                    retryAction = { infoViewModel.getBookById(bookId) })
+                    onFavoriteBorderClick = {
+                        infoViewModel.addBookToDatabase(
+                            bookItem = bookItem!!,
+                            onSuccess = { Log.i("DATABASE", "Success insert") }
+                        )
+                    },
+                    onFavoriteClick = {
+                        infoViewModel.deleteBookFromDatabase(
+                            bookItem = bookItem!!,
+                            onSuccess = { Log.i("DATABASE", "Success delete")}
+                        )
+                    },
+                    retryAction = { infoViewModel.getInfoUiStateByBookId(bookId) })
             }
         }
     }
@@ -82,6 +105,8 @@ fun Info(
     infoUiState: InfoUiState,
     retryAction: () -> Unit,
     scrollState: ScrollState,
+    onFavoriteBorderClick: () -> Unit,
+    onFavoriteClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     when (infoUiState) {
@@ -93,6 +118,8 @@ fun Info(
             DetailedInfo(
                 book = infoUiState.bookById,
                 scrollState = scrollState,
+                onFavoriteBorderClick = onFavoriteBorderClick,
+                onFavoriteClick = onFavoriteClick,
                 modifier = modifier
             )
         }
@@ -109,6 +136,8 @@ fun Info(
 fun DetailedInfo(
     book: Book,
     scrollState: ScrollState,
+    onFavoriteBorderClick: () -> Unit,
+    onFavoriteClick: () -> Unit,
     modifier: Modifier
 ) {
     Column(
@@ -178,7 +207,7 @@ fun DetailedInfo(
                 }
             }
         }
-        MenuItem()
+        MenuItem(onFavoriteBorderClick = onFavoriteBorderClick, onFavoriteClick = onFavoriteClick)
         book.description?.let {
             Text(
                 text = Pattern
@@ -198,26 +227,30 @@ fun DetailedInfo(
     }
 }
 
-var isFavourite = false
-
 @Composable
-fun MenuItem(modifier: Modifier = Modifier) {
+fun MenuItem(
+    modifier: Modifier = Modifier,
+    onFavoriteBorderClick: () -> Unit,
+    onFavoriteClick: () -> Unit
+) {
     var icon by remember { mutableStateOf(Icons.Default.FavoriteBorder) }
     Row(
         modifier = modifier
             .fillMaxWidth()
             .padding(top = 8.dp)
     ) {
-        Column(modifier = modifier
-            .clickable {
-                if (!isFavourite) {
-                    icon = Icons.Default.Favorite
-                    isFavourite = true
-                } else {
-                    icon = Icons.Default.FavoriteBorder
-                    isFavourite = false
+        Column(
+            modifier = modifier
+                .clickable {
+                    if (!isFavourite) {
+                        icon = Icons.Default.Favorite
+                        onFavoriteBorderClick()
+                    } else {
+                        icon = Icons.Default.FavoriteBorder
+                        onFavoriteClick()
+                    }
+                    isFavourite = !isFavourite
                 }
-            }
         ) {
             Icon(
                 imageVector = icon,

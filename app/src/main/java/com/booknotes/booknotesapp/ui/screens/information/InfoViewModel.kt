@@ -12,6 +12,9 @@ import androidx.navigation.NavHostController
 import com.booknotes.booknotesapp.BooksApplication
 import com.booknotes.booknotesapp.data.retrofit.Book
 import com.booknotes.booknotesapp.data.retrofit.BooksRepositoryRetrofit
+import com.booknotes.booknotesapp.data.room.BooksRepositoryRoom
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException
@@ -23,13 +26,14 @@ sealed interface InfoUiState {
 }
 
 class InfoViewModel(
-    private val booksRepositoryRetrofit: BooksRepositoryRetrofit
+    private val booksRepositoryRetrofit: BooksRepositoryRetrofit,
+    private val booksRepositoryRoom: BooksRepositoryRoom
 ) : ViewModel() {
 
     var infoUiState: InfoUiState by mutableStateOf(InfoUiState.Loading)
         private set
 
-    fun getBookById(bookId: String = "") {
+    fun getInfoUiStateByBookId(bookId: String = "") {
         viewModelScope.launch {
             infoUiState = try {
                 InfoUiState.Success(booksRepositoryRetrofit.getBookById(bookId))
@@ -37,6 +41,29 @@ class InfoViewModel(
                 InfoUiState.Error
             } catch (e: HttpException) {
                 InfoUiState.Error
+            }
+        }
+    }
+
+    suspend fun getBookById(bookId: String): Book {
+        return viewModelScope.async {
+            booksRepositoryRetrofit.getBookById(bookId)
+        }.await()
+    }
+
+    fun addBookToDatabase(bookItem: Book, onSuccess: () -> Unit) {
+        viewModelScope.launch(Dispatchers.IO) {
+            booksRepositoryRoom.insertFavouriteBook(bookItem = bookItem) {
+                onSuccess()
+            }
+        }
+
+    }
+
+    fun deleteBookFromDatabase(bookItem: Book, onSuccess: () -> Unit) {
+        viewModelScope.launch(Dispatchers.IO) {
+            booksRepositoryRoom.deleteFavouriteBook(bookItem = bookItem) {
+                onSuccess()
             }
         }
     }
@@ -51,7 +78,11 @@ class InfoViewModel(
                 val application =
                     (this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as BooksApplication)
                 val booksRepository = application.container.booksRepositoryRetrofit
-                InfoViewModel(booksRepositoryRetrofit = booksRepository)
+                val booksDatabase = application.getDatabase()
+                InfoViewModel(
+                    booksRepositoryRetrofit = booksRepository,
+                    booksRepositoryRoom = booksDatabase
+                )
             }
         }
     }

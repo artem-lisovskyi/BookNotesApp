@@ -50,7 +50,7 @@ fun NavigationGraphBottom(
             HomeScreen(navController = navController, modifier = modifier, bottomNav = bottomNav)
         }
         composable(DestinationsBottom.Favorites.route) {
-            FavoritesScreen(navController, modifier, bottomNav = bottomNav)
+            FavoritesScreen(navController = navController, modifier = modifier, bottomNav = bottomNav)
         }
         composable(DestinationsBottom.Recommendations.route) {
             RecommendationsScreen(navController, modifier, bottomNav = bottomNav)
