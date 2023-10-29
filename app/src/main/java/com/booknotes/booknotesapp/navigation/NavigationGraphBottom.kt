@@ -121,6 +121,7 @@ fun NavigationGraphBottom(
                 bookId = it
                     .arguments
                     ?.getString(DestinationsBottom.Information.argBookId),
+                context = appContext,
                 navController = navController
             )
         }

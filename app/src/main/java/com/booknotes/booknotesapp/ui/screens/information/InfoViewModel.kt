@@ -1,5 +1,6 @@
 package com.booknotes.booknotesapp.ui.screens.information
 
+import android.content.Context
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -10,6 +11,7 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.navigation.NavHostController
 import com.booknotes.booknotesapp.BooksApplication
+import com.booknotes.booknotesapp.SaveShared
 import com.booknotes.booknotesapp.data.retrofit.Book
 import com.booknotes.booknotesapp.data.retrofit.BooksRepositoryRetrofit
 import com.booknotes.booknotesapp.data.room.BooksRepositoryRoom
@@ -32,6 +34,29 @@ class InfoViewModel(
 
     var infoUiState: InfoUiState by mutableStateOf(InfoUiState.Loading)
         private set
+
+//    fun onFavoriteClick(context: Context, bookItem: Book, icon: ImageVector): ImageVector {
+//        var favotiteIcon = icon
+//        if (isFavourite == getSharedPreferences(context, bookItem.id)) {
+//            favotiteIcon = Icons.Default.Favorite
+//            SaveShared.setFavorite(context, bookItem.id, true)
+//            addBookToDatabase(bookItem) {
+//                Log.i("DATABASE", "Success insert new record")
+//            }
+//        } else {
+//            favotiteIcon = Icons.Default.FavoriteBorder
+//            SaveShared.setFavorite(context, bookItem.id, false)
+//            deleteBookFromDatabase(bookItem) {
+//                Log.i("DATABASE", "Success delete record")
+//            }
+//        }
+//        isFavourite = !isFavourite
+//        return favotiteIcon
+//    }
+
+    fun getSharedPreferences(context: Context, bookId: String): Boolean {
+        return SaveShared.getFavorite(context = context, key = bookId)
+    }
 
     fun getInfoUiStateByBookId(bookId: String = "") {
         viewModelScope.launch {
