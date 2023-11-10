@@ -35,7 +35,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import com.booknotes.booknotesapp.data.retrofit.Book
+import com.booknotes.booknotesapp.data.room.BookEntity
 import com.booknotes.booknotesapp.ui.MyTopAppBar
 import com.booknotes.booknotesapp.ui.screens.ErrorScreen
 import com.booknotes.booknotesapp.ui.screens.LoadingScreen
@@ -106,7 +106,7 @@ fun Favorite(
 
 @Composable
 fun ListBooks(
-    books: LiveData<List<Book>>,
+    books: LiveData<List<BookEntity>>,
     modifier: Modifier = Modifier,
     onItemClick: (String) -> Unit
 ) {
@@ -126,7 +126,7 @@ fun ListBooks(
 
 @Composable
 fun BookItem(
-    book: Book,
+    book: BookEntity,
     modifier: Modifier = Modifier,
     onItemClick: (String) -> Unit
 ) {

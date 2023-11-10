@@ -11,11 +11,11 @@ import androidx.room.Query
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import com.booknotes.booknotesapp.data.retrofit.Book
+import com.booknotes.booknotesapp.data.room.BookEntity
 import com.booknotes.booknotesapp.data.room.StringListConverter
 
 
-@Database(entities = [Book::class], version = 1)
+@Database(entities = [BookEntity::class], version = 1)
 @TypeConverters(StringListConverter::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun bookItemDao(): BookItemDao
@@ -40,13 +40,13 @@ abstract class AppDatabase : RoomDatabase() {
 @Dao
 interface BookItemDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertFavoriteBook(bookItem: Book)
+    suspend fun insertFavoriteBook(bookItem: BookEntity)
 
     @Delete
-    suspend fun deleteFavoriteBook(bookItem: Book)
+    suspend fun deleteFavoriteBook(bookItem: BookEntity)
 
-    @Query("SELECT * FROM favourite_books")
-    fun getAllFavouriteBooks(): LiveData<List<Book>>
+    @Query("SELECT * FROM favourite_books WHERE userId = :userId ")
+    fun getAllFavouriteBooks(userId: String): LiveData<List<BookEntity>>
 
 //    @Insert
 //    fun insertAll(vararg bookItems: Favorites)

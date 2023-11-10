@@ -44,6 +44,7 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.booknotes.booknotesapp.data.SaveShared
 import com.booknotes.booknotesapp.data.retrofit.Book
+import com.booknotes.booknotesapp.data.room.BookEntity
 import com.booknotes.booknotesapp.ui.MyTopAppBarWithBackButton
 import com.booknotes.booknotesapp.ui.screens.ErrorScreen
 import com.booknotes.booknotesapp.ui.screens.LoadingScreen
@@ -63,10 +64,9 @@ fun InformationScreen(
     val infoViewModel: InfoViewModel = viewModel(factory = InfoViewModel.Factory)
     infoViewModel.getInfoUiStateByBookId(bookId!!)
 
-    var bookItem by remember { mutableStateOf<Book?>(null) }
+    var bookItem by remember { mutableStateOf<BookEntity?>(null) }
     LaunchedEffect(Unit) {
-        val book = infoViewModel.getBookById(bookId)
-        bookItem = book
+        bookItem = infoViewModel.getBookFromRetrofit(bookId)
     }
     val isFavorite by remember {
         mutableStateOf(false)

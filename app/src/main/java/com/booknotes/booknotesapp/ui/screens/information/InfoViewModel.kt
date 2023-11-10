@@ -12,12 +12,14 @@ import androidx.navigation.NavHostController
 import com.booknotes.booknotesapp.BooksApplication
 import com.booknotes.booknotesapp.data.retrofit.Book
 import com.booknotes.booknotesapp.data.retrofit.BooksRepositoryRetrofit
+import com.booknotes.booknotesapp.data.room.BookEntity
 import com.booknotes.booknotesapp.data.room.BooksRepositoryRoom
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException
+
 
 sealed interface InfoUiState {
     data class Success(val bookById: Book) : InfoUiState
@@ -64,13 +66,7 @@ class InfoViewModel(
         }
     }
 
-    suspend fun getBookById(bookId: String): Book {
-        return viewModelScope.async {
-            booksRepositoryRetrofit.getBookById(bookId)
-        }.await()
-    }
-
-    fun addBookToDatabase(bookItem: Book, onSuccess: () -> Unit) {
+    fun addBookToDatabase(bookItem: BookEntity, onSuccess: () -> Unit) {
         viewModelScope.launch(Dispatchers.IO) {
             booksRepositoryRoom.insertFavouriteBook(bookItem = bookItem) {
                 onSuccess()
@@ -79,7 +75,7 @@ class InfoViewModel(
 
     }
 
-    fun deleteBookFromDatabase(bookItem: Book, onSuccess: () -> Unit) {
+    fun deleteBookFromDatabase(bookItem: BookEntity, onSuccess: () -> Unit) {
         viewModelScope.launch(Dispatchers.IO) {
             booksRepositoryRoom.deleteFavouriteBook(bookItem = bookItem) {
                 onSuccess()
@@ -89,6 +85,23 @@ class InfoViewModel(
 
     fun backNavigation(navController: NavHostController) {
         navController.navigateUp()
+    }
+
+    suspend fun getBookFromRetrofit(bookId: String): BookEntity {
+        val book = booksRepositoryRetrofit.getBookById(bookId)
+        val currentUserUid = FirebaseAuth.getInstance().currentUser!!.uid
+        return BookEntity(
+            id = book.id,
+            userId = currentUserUid,
+            title = book.title,
+            authors = book.authors,
+            publishedDate = book.publishedDate,
+            description = book.description,
+            pageCount = book.pageCount,
+            categories = book.categories,
+            imageLink = book.imageLink,
+            previewLink = book.previewLink
+        )
     }
 
     companion object {

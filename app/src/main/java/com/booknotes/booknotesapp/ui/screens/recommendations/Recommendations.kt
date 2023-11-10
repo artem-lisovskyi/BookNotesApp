@@ -12,6 +12,9 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import com.booknotes.booknotesapp.ui.MyTopAppBar
 
+
+
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RecommendationsScreen(navController: NavHostController, modifier: Modifier = Modifier, bottomNav: @Composable () -> Unit) {
@@ -26,6 +29,7 @@ fun RecommendationsScreen(navController: NavHostController, modifier: Modifier =
                 .fillMaxWidth()
                 .padding(it),
             color = MaterialTheme.colorScheme.background
-        ) { }
+        ) {
+        }
     }
 }

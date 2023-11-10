@@ -11,15 +11,16 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.navigation.NavHostController
 import com.booknotes.booknotesapp.BooksApplication
-import com.booknotes.booknotesapp.data.retrofit.Book
+import com.booknotes.booknotesapp.data.room.BookEntity
 import com.booknotes.booknotesapp.data.room.BooksRepositoryRoom
 import com.booknotes.booknotesapp.navigation.DestinationsBottom
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException
 
 sealed interface FavoriteUiState {
-    data class Success(val favoritesBook: LiveData<List<Book>>) : FavoriteUiState
+    data class Success(val favoritesBook: LiveData<List<BookEntity>>) : FavoriteUiState
     object Error : FavoriteUiState
     object Loading : FavoriteUiState
 }
@@ -30,6 +31,8 @@ class FavoritesViewModel(
 
     var favoriteUiState: FavoriteUiState by mutableStateOf(FavoriteUiState.Loading)
         private set
+    private val userId = FirebaseAuth.getInstance().currentUser!!.uid
+
 
     init {
         getBooksFromDatabase()
@@ -39,7 +42,7 @@ class FavoritesViewModel(
         viewModelScope.launch() {
             favoriteUiState = FavoriteUiState.Loading
             favoriteUiState = try {
-                FavoriteUiState.Success(booksRepositoryRoom.allFavouriteBooks)
+                FavoriteUiState.Success(booksRepositoryRoom.allFavouriteBooks(userId))
             } catch (e: IOException) {
                 FavoriteUiState.Error
             } catch (e: HttpException) {
