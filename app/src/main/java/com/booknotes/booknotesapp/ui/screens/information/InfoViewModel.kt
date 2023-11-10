@@ -1,6 +1,5 @@
 package com.booknotes.booknotesapp.ui.screens.information
 
-import android.content.Context
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -11,7 +10,6 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.navigation.NavHostController
 import com.booknotes.booknotesapp.BooksApplication
-import com.booknotes.booknotesapp.SaveShared
 import com.booknotes.booknotesapp.data.retrofit.Book
 import com.booknotes.booknotesapp.data.retrofit.BooksRepositoryRetrofit
 import com.booknotes.booknotesapp.data.room.BooksRepositoryRoom
@@ -53,10 +51,6 @@ class InfoViewModel(
 //        isFavourite = !isFavourite
 //        return favotiteIcon
 //    }
-
-    fun getSharedPreferences(context: Context, bookId: String): Boolean {
-        return SaveShared.getFavorite(context = context, key = bookId)
-    }
 
     fun getInfoUiStateByBookId(bookId: String = "") {
         viewModelScope.launch {

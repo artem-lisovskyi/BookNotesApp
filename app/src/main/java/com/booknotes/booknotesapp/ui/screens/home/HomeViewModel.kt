@@ -33,7 +33,7 @@ class HomeViewModel(
 
     var homeUiState: HomeUiState by mutableStateOf(HomeUiState.Loading)
         private set
-
+    private var bookId = ""
 
     private val _searchTextState: MutableState<String> = mutableStateOf(value = "")
     val searchTextState: State<String> = _searchTextState
@@ -57,6 +57,9 @@ class HomeViewModel(
         }
     }
 
+    fun setId(id: String){
+        bookId = id
+    }
 
     fun updateSearchTextState(newValue: String) {
         _searchTextState.value = newValue

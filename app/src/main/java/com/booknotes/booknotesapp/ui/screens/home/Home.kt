@@ -89,6 +89,7 @@ fun HomeScreen(
                             navController = navController,
                             bookId = it
                         )
+                        homeViewModel.setId(it)
                     })
             }
         }
@@ -191,9 +192,7 @@ fun BookItem(
             .fillMaxWidth()
             .padding(start = 16.dp, end = 16.dp)
             .clickable {
-                book.id?.let {
-                    onItemClick(it)
-                }
+                onItemClick(book.id)
             }
     ) {
 
