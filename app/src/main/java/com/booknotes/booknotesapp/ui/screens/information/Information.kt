@@ -49,6 +49,7 @@ import com.booknotes.booknotesapp.ui.MyTopAppBarWithBackButton
 import com.booknotes.booknotesapp.ui.screens.ErrorScreen
 import com.booknotes.booknotesapp.ui.screens.LoadingScreen
 import com.booknotesapp.booknotesapp.R
+import com.google.firebase.auth.FirebaseAuth
 import java.util.regex.Pattern
 
 
@@ -71,7 +72,9 @@ fun InformationScreen(
     val isFavorite by remember {
         mutableStateOf(false)
     }
-    val stateFavorite by remember { mutableStateOf(SaveShared.getFavorite(context, bookId)) }
+    val userId = FirebaseAuth.getInstance().currentUser!!.uid
+
+    val stateFavorite by remember { mutableStateOf(SaveShared.getFavorite(context, bookId, userId)) }
     val icon by remember {
         mutableStateOf(
             if (isFavorite != stateFavorite) {
@@ -117,11 +120,11 @@ fun InformationScreen(
                     },
                     stateFavorite = stateFavorite,
                     saveSharedFavoriteBorder = {
-                        SaveShared.setFavorite(context, bookId, true)
+                        SaveShared.setFavorite(context, bookId, true, userId)
                         Log.i("SAVESHARED", "$bookId true")
                     },
                     saveSharedFavorite = {
-                        SaveShared.setFavorite(context, bookId, false)
+                        SaveShared.setFavorite(context, bookId, false, userId)
                         Log.i("SAVESHARED", "$bookId false")
                     },
                     icon = icon,

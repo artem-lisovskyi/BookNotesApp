@@ -1,11 +1,10 @@
 package com.booknotes.booknotesapp.data.room
 
 import androidx.room.Entity
-import androidx.room.PrimaryKey
 
-@Entity(tableName = "favourite_books")
+@Entity(tableName = "favourite_books", primaryKeys = ["id", "userId"])
 data class BookEntity(
-    @PrimaryKey val id: String,
+    val id: String,
     val userId: String,
     val title: String?,
     val authors: List<String>?,
