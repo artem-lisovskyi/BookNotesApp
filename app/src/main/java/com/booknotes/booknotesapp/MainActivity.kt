@@ -28,7 +28,6 @@ class MainActivity : ComponentActivity() {
         )
     }
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -44,10 +43,11 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MyNavigation(googleAuthUiClient: GoogleAuthUiClient, appContext: Context) {
     val navController = rememberNavController()
-    val bottomNav:@Composable () -> Unit = remember{ @Composable { MyBottomNavigation(navController = navController) }}
+    val bottomNav: @Composable () -> Unit =
+        remember { @Composable { MyBottomNavigation(navController = navController) } }
 
     Scaffold(
-       // bottomBar = { MyBottomNavigation(navController = navController) }
+        // bottomBar = { MyBottomNavigation(navController = navController) }
     ) {
         NavigationGraphBottom(
             navController = navController,
