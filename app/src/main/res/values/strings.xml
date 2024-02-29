@@ -12,5 +12,6 @@
     <string name="backbutton">BackButton</string>
     <string name="don_t_favorite">Don\'t favorite</string>
     <string name="web_client_id">966939379231-77a9hkr3kuocs0g1a4nmclkmpvqstdqn.apps.googleusercontent.com</string>
+    <string name="update_recommendations">Update recommendations</string>
 
 </resources>

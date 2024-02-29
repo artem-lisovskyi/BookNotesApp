@@ -15,14 +15,17 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.booknotes.booknotesapp.ui.MyTopAppBar
 import com.booknotes.booknotesapp.ui.screens.ErrorScreen
-import com.booknotes.booknotesapp.ui.screens.LoadingScreen
+import com.booknotes.booknotesapp.ui.screens.LoadingIndicator
 import com.booknotes.booknotesapp.ui.screens.home.ListBooks
+import com.booknotesapp.booknotesapp.R
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -54,7 +57,8 @@ fun RecommendationsScreen(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(8.dp)
+                        .padding(8.dp),
+                    contentAlignment = Alignment.Center
                 ) {
                     Button(
                         onClick = {
@@ -66,7 +70,7 @@ fun RecommendationsScreen(
                         },
                         enabled = isButtonEnabled.value,
                     ) {
-                        Text("🔃 Update recommendations")
+                        Text(stringResource(R.string.update_recommendations))
                     }
                 }
                 Recommendations(recommendationsUiState = recommendationsViewModel.recommendatinsUiState,
@@ -93,7 +97,7 @@ fun Recommendations(
 ) {
     when (recommendationsUiState) {
         is RecommendatinsUiState.Loading -> {
-            LoadingScreen(modifier, "Making recommendations. Please wait!")
+            LoadingIndicator(modifier, "Making recommendations. Please wait!")
         }
 
         is RecommendatinsUiState.Success -> {

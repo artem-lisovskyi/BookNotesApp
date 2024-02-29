@@ -46,7 +46,7 @@ import coil.request.ImageRequest
 import com.booknotes.booknotesapp.data.retrofit.Book
 import com.booknotes.booknotesapp.ui.MyTopAppBar
 import com.booknotes.booknotesapp.ui.screens.ErrorScreen
-import com.booknotes.booknotesapp.ui.screens.LoadingScreen
+import com.booknotes.booknotesapp.ui.screens.LoadingIndicator
 import com.booknotesapp.booknotesapp.R
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -106,7 +106,7 @@ fun Home(
 ) {
     when (homeUiState) {
         is HomeUiState.Loading -> {
-            LoadingScreen(modifier)
+            LoadingIndicator(modifier)
         }
 
         is HomeUiState.Success -> {

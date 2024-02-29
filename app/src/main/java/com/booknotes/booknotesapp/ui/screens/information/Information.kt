@@ -47,7 +47,7 @@ import com.booknotes.booknotesapp.data.retrofit.Book
 import com.booknotes.booknotesapp.data.room.BookEntity
 import com.booknotes.booknotesapp.ui.MyTopAppBarWithBackButton
 import com.booknotes.booknotesapp.ui.screens.ErrorScreen
-import com.booknotes.booknotesapp.ui.screens.LoadingScreen
+import com.booknotes.booknotesapp.ui.screens.LoadingIndicator
 import com.booknotesapp.booknotesapp.R
 import com.google.firebase.auth.FirebaseAuth
 import java.util.regex.Pattern
@@ -152,7 +152,7 @@ fun Info(
 ) {
     when (infoUiState) {
         is InfoUiState.Loading -> {
-            LoadingScreen(modifier)
+            LoadingIndicator(modifier)
         }
 
         is InfoUiState.Success -> {

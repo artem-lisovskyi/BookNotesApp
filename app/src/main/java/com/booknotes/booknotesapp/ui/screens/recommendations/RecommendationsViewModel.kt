@@ -20,7 +20,6 @@ import com.booknotes.booknotesapp.navigation.DestinationsBottom
 import com.booknotes.booknotesapp.network.model.BookNames
 import com.booknotes.booknotesapp.network.model.RecommendationResponse
 import com.google.firebase.auth.FirebaseAuth
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -51,7 +50,7 @@ class RecommendationsViewModel(
     }
 
     fun checkDatabaseAndFetchBooks() {
-        CoroutineScope(Dispatchers.IO).launch {
+        viewModelScope.launch {
             val isDatabaseEmpty = withContext(Dispatchers.IO) {
                 booksRepositoryRoom.countFavouriteBooks(userId) == 0
             }
