@@ -51,6 +51,7 @@ class RecommendationsViewModel(
 
     fun checkDatabaseAndFetchBooks() {
         viewModelScope.launch {
+            recommendatinsUiState = RecommendatinsUiState.Loading
             val isDatabaseEmpty = withContext(Dispatchers.IO) {
                 booksRepositoryRoom.countFavouriteBooks(userId) == 0
             }

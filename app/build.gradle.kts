@@ -66,6 +66,7 @@ dependencies {
     implementation("androidx.compose.material:material:1.5.1")
     implementation("androidx.compose.runtime:runtime-livedata:1.5.1")
 
+
     //Navigation
     implementation("androidx.navigation:navigation-compose:2.7.2")
 
