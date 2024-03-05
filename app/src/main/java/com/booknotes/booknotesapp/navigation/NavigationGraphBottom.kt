@@ -35,7 +35,9 @@ fun NavigationGraphBottom(
     lifecycleScope: CoroutineScope,
     appContext: Context,
     bottomNav: @Composable () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    darkTheme: Boolean,
+    onThemeUpdated: () -> Unit
 ) {
 
     NavHost(
@@ -65,9 +67,10 @@ fun NavigationGraphBottom(
                     Toast.makeText(appContext, "Successful sign out", Toast.LENGTH_SHORT).show()
                     navController.navigate(DestinationsBottom.Onboarding.route)
                 },
-                navController = navController,
                 modifier = modifier,
-                bottomNav = bottomNav
+                bottomNav = bottomNav,
+                darkTheme = darkTheme,
+                onThemeUpdated = onThemeUpdated
             )
             
         }

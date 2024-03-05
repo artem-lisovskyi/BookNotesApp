@@ -83,9 +83,9 @@ fun RecommendationsScreen(
                         recommendationsViewModel.setId(it)
                     })
             }
-
         }
     }
+    
     LaunchedEffect(Unit) {
         snapshotFlow { recommendationsViewModel.recommendatinsUiState }
             .collect { value ->
@@ -93,9 +93,11 @@ fun RecommendationsScreen(
                     is RecommendatinsUiState.Success -> {
                         isLoading = false
                     }
+
                     is RecommendatinsUiState.Error -> {
                         isLoading = false
                     }
+
                     is RecommendatinsUiState.Loading -> {}
                 }
             }

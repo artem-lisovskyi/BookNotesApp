@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -25,8 +26,8 @@ fun MyBottomNavigation(navController: NavHostController) {
         DestinationsBottom.Profile
     )
     BottomNavigation(
-        backgroundColor = Color.DarkGray,
-        contentColor = Color.Black,
+        backgroundColor = MaterialTheme.colorScheme.background,//Color.DarkGray,
+        contentColor = MaterialTheme.colorScheme.primary,//Color.Black,
         modifier = Modifier.height(70.dp)
     ) {
         val navBackStackEntry by navController.currentBackStackEntryAsState()

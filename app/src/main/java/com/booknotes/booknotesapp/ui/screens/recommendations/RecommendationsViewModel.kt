@@ -75,6 +75,7 @@ class RecommendationsViewModel(
             val liveData = booksRepositoryRoom.allFavouriteBooksList(userId)
             val listOfTitles =
                 liveData.map { it.title!! }
+            Log.i("LIST OF FAVOURITES", listOfTitles.toString())
             val response =
                 recommendationRepositoryRetrofit.getRecommendations(BookNames(listOfTitles))
             response.enqueue(object : retrofit2.Callback<RecommendationResponse> {
@@ -84,7 +85,11 @@ class RecommendationsViewModel(
                 ) {
                     if (response.isSuccessful) {
                         recommendations = response.body()?.recommendations ?: emptyList()
-                        getBooksForQueries(recommendations)
+                        if (recommendations.isEmpty()) {
+                            getBooksForQueries()
+                        } else {
+                            getBooksForQueries(recommendations)
+                        }
                     } else {
                         Log.e(
                             "Error with recommendations",
@@ -113,7 +118,7 @@ class RecommendationsViewModel(
         ),
         maxResultsPerQuery: Int = 3
     ) {
-        Log.i("LIST OF QUERIES BOOK", queries.toString())
+        Log.i("LIST OF QUERIES BOOK(RECOMMENDATIONS)", queries.toString())
         viewModelScope.launch {
 
             val recommendationsList = mutableListOf<Book>()

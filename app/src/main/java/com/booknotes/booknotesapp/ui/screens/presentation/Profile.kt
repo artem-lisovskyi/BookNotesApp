@@ -1,5 +1,6 @@
 package com.booknotes.booknotesapp.ui.screens.presentation
 
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -14,6 +15,8 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -24,7 +27,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.booknotes.booknotesapp.signIn.UserData
 import com.booknotes.booknotesapp.ui.MyTopAppBar
@@ -34,14 +36,15 @@ import com.booknotes.booknotesapp.ui.MyTopAppBar
 fun ProfileScreen(
     userData: UserData?,
     onSignOut: () -> Unit,
-    navController: NavHostController,
     modifier: Modifier = Modifier,
+    darkTheme: Boolean = isSystemInDarkTheme(),
+    onThemeUpdated: () -> Unit,
     bottomNav: @Composable () -> Unit
 ) {
     Scaffold(
         modifier = modifier.fillMaxSize(),
         topBar = { MyTopAppBar() },
-        bottomBar =bottomNav//{ MyBottomNavigation(navController = navController) }
+        bottomBar = bottomNav//{ MyBottomNavigation(navController = navController) }
     ) {
         Surface(
             modifier = Modifier
@@ -54,7 +57,7 @@ fun ProfileScreen(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                if(userData?.profilePictureUrl != null) {
+                if (userData?.profilePictureUrl != null) {
                     AsyncImage(
                         model = userData.profilePictureUrl,
                         contentDescription = "Profile picture",
@@ -65,7 +68,7 @@ fun ProfileScreen(
                     )
                     Spacer(modifier = Modifier.height(16.dp))
                 }
-                if(userData?.userName != null) {
+                if (userData?.userName != null) {
                     Text(
                         text = userData.userName,
                         textAlign = TextAlign.Center,
@@ -77,8 +80,28 @@ fun ProfileScreen(
                 Button(onClick = onSignOut) {
                     Text(text = "Sign out")
                 }
+                ThemeSwitch(
+                    isDarkTheme = darkTheme,
+                    onThemeUpdated = onThemeUpdated
+                )
             }
 
         }
     }
+}
+@Composable
+fun ThemeSwitch(
+    modifier: Modifier = Modifier,
+    isDarkTheme: Boolean,
+    onThemeUpdated: () -> Unit
+) {
+    Switch(
+        modifier = modifier.padding(16.dp),
+        checked = isDarkTheme,
+        onCheckedChange = { onThemeUpdated() },
+        colors = SwitchDefaults.colors(
+            checkedThumbColor = MaterialTheme.colorScheme.scrim,
+            checkedTrackColor = MaterialTheme.colorScheme.outline
+        )
+    )
 }
