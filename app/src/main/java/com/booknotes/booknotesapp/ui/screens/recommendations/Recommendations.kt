@@ -5,7 +5,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.AbsoluteRoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -20,6 +23,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -68,7 +72,13 @@ fun RecommendationsScreen(
                             isLoading = true
                             recommendationsViewModel.checkDatabaseAndFetchBooks()
                         },
+                        shape = AbsoluteRoundedCornerShape(10.dp),
+                        modifier = Modifier.size(250.dp, 50.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color(0xFF3295DD)
+                        ),
                         enabled = !isLoading
+
                     ) {
                         Text(stringResource(R.string.update_recommendations))
                     }
@@ -85,7 +95,7 @@ fun RecommendationsScreen(
             }
         }
     }
-    
+
     LaunchedEffect(Unit) {
         snapshotFlow { recommendationsViewModel.recommendatinsUiState }
             .collect { value ->

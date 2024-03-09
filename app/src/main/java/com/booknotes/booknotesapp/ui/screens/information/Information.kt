@@ -323,17 +323,20 @@ fun MenuItem(
         ) {
             Icon(
                 imageVector = iconFavorite,
+                tint = Color(0xFFC51717),
                 contentDescription = stringResource(R.string.don_t_favorite),
                 modifier = modifier
-                    .size(50.dp)
+                    .padding(top = 8.dp, start = 16.dp, end = 8.dp)
+                    .size(60.dp)
+
             )
-            Text(
-                text = "Add to favorite",
-                fontSize = 8.sp,
-                color = Color.Gray,
-                modifier = Modifier
-                    .padding(top = 8.dp)
-            )
+//            Text(
+//                text = "Add to favorite",
+//                fontSize = 8.sp,
+//                color = Color.Gray,
+//                modifier = Modifier
+//                    .padding(top = 8.dp)
+//            )
         }
 
 //        Column(modifier = modifier.clickable { }) {

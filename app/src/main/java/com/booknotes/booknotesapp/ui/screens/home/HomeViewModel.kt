@@ -44,11 +44,27 @@ class HomeViewModel(
     }
 
 
-    fun getBooks(query: String = "book", maxResults: Int = 40) {
+    fun getBooks(
+        query: String? = null,
+        maxResults: Int = 40,
+        langRestrict: String = "en",
+        orderBy: String = "relevance"
+    ) {
         viewModelScope.launch {
             homeUiState = HomeUiState.Loading
             homeUiState = try {
-                HomeUiState.Success(booksRepositoryRetrofit.getBooks(query, maxResults))
+                HomeUiState.Success(
+                    booksRepositoryRetrofit.getBooks(
+                        query = if (query.isNullOrBlank()) {
+                            "subject:fiction"
+                        } else {
+                            "intitle:$query"
+                        },
+                        maxResults,
+                        langRestrict,
+                        orderBy
+                    )
+                )
             } catch (e: IOException) {
                 HomeUiState.Error
             } catch (e: HttpException) {
@@ -57,7 +73,7 @@ class HomeViewModel(
         }
     }
 
-    fun setId(id: String){
+    fun setId(id: String) {
         bookId = id
     }
 

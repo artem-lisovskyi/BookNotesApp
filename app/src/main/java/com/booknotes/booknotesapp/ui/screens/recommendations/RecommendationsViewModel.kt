@@ -22,7 +22,6 @@ import com.booknotes.booknotesapp.network.model.RecommendationResponse
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import retrofit2.Call
 import retrofit2.HttpException
 import java.io.IOException
@@ -50,73 +49,66 @@ class RecommendationsViewModel(
     }
 
     fun checkDatabaseAndFetchBooks() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             recommendatinsUiState = RecommendatinsUiState.Loading
-            val isDatabaseEmpty = withContext(Dispatchers.IO) {
-                booksRepositoryRoom.countFavouriteBooks(userId) == 0
-            }
+            val isDatabaseEmpty = booksRepositoryRoom.countFavouriteBooks(userId) == 0
             if (isDatabaseEmpty) {
-                withContext(Dispatchers.IO) {
-                    getBooksForQueries()
-                }
+                getBooksForQueries()
             } else {
-                withContext(Dispatchers.IO) {
-                    getRecommendations()
-                }
+                getRecommendations()
             }
 
         }
     }
 
     private suspend fun getRecommendations() {
-        withContext(Dispatchers.IO) {
-            recommendatinsUiState = RecommendatinsUiState.Loading
-            var recommendations: List<String>
-            val liveData = booksRepositoryRoom.allFavouriteBooksList(userId)
-            val listOfTitles =
-                liveData.map { it.title!! }
-            Log.i("LIST OF FAVOURITES", listOfTitles.toString())
-            val response =
-                recommendationRepositoryRetrofit.getRecommendations(BookNames(listOfTitles))
-            response.enqueue(object : retrofit2.Callback<RecommendationResponse> {
-                override fun onResponse(
-                    call: Call<RecommendationResponse>,
-                    response: retrofit2.Response<RecommendationResponse>
-                ) {
-                    if (response.isSuccessful) {
-                        recommendations = response.body()?.recommendations ?: emptyList()
-                        if (recommendations.isEmpty()) {
-                            getBooksForQueries()
-                        } else {
-                            getBooksForQueries(recommendations)
-                        }
+        recommendatinsUiState = RecommendatinsUiState.Loading
+        var recommendations: List<String>
+        val liveData = booksRepositoryRoom.allFavouriteBooksList(userId)
+        val listOfTitles =
+            liveData.map { it.title!! }
+        Log.i("LIST OF FAVOURITES", listOfTitles.toString())
+        val response =
+            recommendationRepositoryRetrofit.getRecommendations(BookNames(listOfTitles))
+        response.enqueue(object : retrofit2.Callback<RecommendationResponse> {
+            override fun onResponse(
+                call: Call<RecommendationResponse>,
+                response: retrofit2.Response<RecommendationResponse>
+            ) {
+                if (response.isSuccessful) {
+                    recommendations = response.body()?.recommendations ?: emptyList()
+                    if (recommendations.isEmpty()) {
+                        getBooksForQueries()
                     } else {
-                        Log.e(
-                            "Error with recommendations",
-                            "Error: ${response.code()} ${response.errorBody()?.string()}"
-                        )
-                        recommendatinsUiState = RecommendatinsUiState.Error
+                        getBooksForQueries(recommendations)
                     }
-                }
-
-                override fun onFailure(call: Call<RecommendationResponse>, t: Throwable) {
-                    Log.e("Error with recommendations", "Error: ${t.message}")
+                } else {
+                    Log.e(
+                        "Error with recommendations",
+                        "Error: ${response.code()} ${response.errorBody()?.string()}"
+                    )
                     recommendatinsUiState = RecommendatinsUiState.Error
                 }
-            })
-        }
+            }
+
+            override fun onFailure(call: Call<RecommendationResponse>, t: Throwable) {
+                Log.e("Error with recommendations", "Error: ${t.message}")
+                recommendatinsUiState = RecommendatinsUiState.Error
+            }
+        })
+
     }
 
 
     fun getBooksForQueries(
         queries: List<String> = listOf(
             "Harry Potter",
-            "1984",
-            "The book of forest",
             "Green Mile",
             "Divergent"
         ),
-        maxResultsPerQuery: Int = 3
+        maxResultsPerQuery: Int = 1,
+        langRestrict: String = "en",
+        orderBy: String = "relevance"
     ) {
         Log.i("LIST OF QUERIES BOOK(RECOMMENDATIONS)", queries.toString())
         viewModelScope.launch {
@@ -128,7 +120,12 @@ class RecommendationsViewModel(
 
                 recommendatinsUiState = try {
                     val response =
-                        booksRepositoryRetrofit.getBooks(query, maxResultsPerQuery)
+                        booksRepositoryRetrofit.getBooks(
+                            "intitle:$query",
+                            maxResultsPerQuery,
+                            langRestrict,
+                            orderBy
+                        )
                     val books = response.take(maxResultsPerQuery)
                     books.let { recommendationsList.addAll(it) }
                     RecommendatinsUiState.Success(recommendationsList)

@@ -11,6 +11,8 @@ interface BooksApi {
     suspend fun searchBook(
         @Query("q") title: String,
         @Query("maxResults") maxResults: Int,
+        @Query("langRestrict") langRestrict: String,
+        @Query("orderBy") orderBy: String
     ): BooksFromJson
 
     @GET("volumes/{volumeId}")

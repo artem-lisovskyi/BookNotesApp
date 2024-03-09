@@ -35,19 +35,36 @@ fun MyBottomNavigation(navController: NavHostController) {
         items.forEach { screen ->
             BottomNavigationItem(
                 icon = {
-                    Icon(
-                        painter = painterResource(id = screen.icon),
-                        contentDescription = screen.title,
-                        modifier = Modifier.size(40.dp)
-                    )
+                    if (currentRoute != screen.route) {
+                        Icon(
+                            painter = painterResource(id = screen.icon),
+                            contentDescription = screen.title,
+                            modifier = Modifier.size(40.dp)
+                        )
+                    } else {
+                        Icon(
+                            painter = painterResource(id = screen.icon),
+                            tint = Color(0xFF3295DD),
+                            contentDescription = screen.title,
+                            modifier = Modifier.size(40.dp)
+                        )
+                    }
                 },
                 label = {
-                    Text(
-                        text = screen.title,
-                        fontSize = 10.sp
-                    )
+                    if (currentRoute != screen.route) {
+                        Text(
+                            text = screen.title,
+                            fontSize = 10.sp
+                        )
+                    }else{
+                        Text(
+                            text = screen.title,
+                            fontSize = 10.sp,
+                            color = Color(0xFF3295DD)
+                        )
+                    }
                 },
-                selectedContentColor = Color.Black,
+                selectedContentColor = Color(0xFF3295DD),
                 unselectedContentColor = Color.Black.copy(0.4f),
                 alwaysShowLabel = false,
                 selected = currentRoute == screen.route,

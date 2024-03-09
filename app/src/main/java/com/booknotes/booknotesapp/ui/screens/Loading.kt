@@ -38,7 +38,7 @@ fun LoadingIndicator(modifier: Modifier = Modifier, loadingText: String = "Loadi
             Spacer(modifier = modifier.height(16.dp))
             Text(
                 text = loadingText,
-                color = Color.White
+                color = Color.Gray
             )
         }
     }

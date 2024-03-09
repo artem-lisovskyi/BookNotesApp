@@ -5,11 +5,27 @@
       <entry key="LoadingIndicatorPreview">
         <State />
       </entry>
+      <entry key="OnboardingPreview">
+        <State />
+      </entry>
       <entry key="PreviewLoadingIndicator">
         <State />
       </entry>
       <entry key="app">
-        <State />
+        <State>
+          <runningDeviceTargetSelectedWithDropDown>
+            <Target>
+              <type value="RUNNING_DEVICE_TARGET" />
+              <deviceKey>
+                <Key>
+                  <type value="SERIAL_NUMBER" />
+                  <value value="adb-1afb4120013-UDPevv._adb-tls-connect._tcp" />
+                </Key>
+              </deviceKey>
+            </Target>
+          </runningDeviceTargetSelectedWithDropDown>
+          <timeTargetWasSelectedWithDropDown value="2024-03-09T11:06:40.737526700Z" />
+        </State>
       </entry>
     </value>
   </component>

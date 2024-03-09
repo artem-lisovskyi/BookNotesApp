@@ -15,11 +15,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
+import com.booknotes.booknotesapp.data.SaveShared
 import com.booknotes.booknotesapp.navigation.MyBottomNavigation
 import com.booknotes.booknotesapp.navigation.NavigationGraphBottom
 import com.booknotes.booknotesapp.signIn.GoogleAuthUiClient
 import com.booknotes.booknotesapp.ui.theme.BookNotesTheme
 import com.google.android.gms.auth.api.identity.Identity
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 
@@ -34,13 +36,22 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            var darkTheme by remember { mutableStateOf(false) }
+            val userId = FirebaseAuth.getInstance().currentUser!!.uid
+            val theme = SaveShared.getTheme(
+                applicationContext,
+                "theme",
+                userId
+            )
+            var darkTheme by remember { mutableStateOf(theme) }
             BookNotesTheme(darkTheme = darkTheme) {
                 MyNavigation(
                     googleAuthUiClient = googleAuthUiClient,
                     appContext = applicationContext,
                     darkTheme = darkTheme
-                ) { darkTheme = !darkTheme }
+                ) {
+                    darkTheme = !darkTheme
+                    SaveShared.setTheme(applicationContext, "theme", darkTheme, userId)
+                }
             }
         }
     }

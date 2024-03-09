@@ -33,7 +33,7 @@ class DefaultAppContainer : AppContainer {
 }
 
 class RecommendationAppContainer : RecommendContainer {
-    private val BASE_URL = "https://recommend-server-las.azurewebsites.net/"
+    private val BASE_URL = "http://192.168.1.160:5000/"
 
     private val okHttpClient = OkHttpClient.Builder()
         .readTimeout(200, TimeUnit.SECONDS)
