@@ -123,7 +123,7 @@ fun Recommendations(
 ) {
     when (recommendationsUiState) {
         is RecommendatinsUiState.Loading -> {
-            LoadingIndicator(modifier, "Making recommendations. Please wait!")
+            LoadingIndicator(modifier, stringResource(R.string.making_recommendations))
         }
 
         is RecommendatinsUiState.Success -> {

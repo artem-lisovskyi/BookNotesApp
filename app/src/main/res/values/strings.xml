@@ -13,5 +13,15 @@
     <string name="don_t_favorite">Don\'t favorite</string>
     <string name="web_client_id">966939379231-77a9hkr3kuocs0g1a4nmclkmpvqstdqn.apps.googleusercontent.com</string>
     <string name="update_recommendations">Update recommendations</string>
+    <string name="home_title">Home</string>
+    <string name="successful_sign_out">Successful sign out</string>
+    <string name="successful_sign_in">Successful sign in</string>
+    <string name="published_date">Published date:</string>
+    <string name="sign_in_phrase"><![CDATA[Your Reading Odyssey Begins: Discover & Sign In]]></string>
+    <string name="sign_in">Sign in</string>
+    <string name="profile_picture">Profile picture</string>
+    <string name="dark_mode">Dark mode</string>
+    <string name="sign_out">Sign out</string>
+    <string name="making_recommendations">Making recommendations. Please wait!</string>
 
 </resources>

@@ -30,6 +30,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -75,7 +76,7 @@ fun ProfileScreen(
                     if (userData?.profilePictureUrl != null) {
                         AsyncImage(
                             model = userData.profilePictureUrl,
-                            contentDescription = "Profile picture",
+                            contentDescription = stringResource(R.string.profile_picture),
                             modifier = Modifier
                                 .size(150.dp)
                                 .clip(CircleShape),
@@ -117,7 +118,7 @@ fun ProfileScreen(
                             modifier = Modifier.size(32.dp)
                         )
                         Spacer(modifier = Modifier.width(16.dp))
-                        Text(text = "Dark mode")
+                        Text(text = stringResource(R.string.dark_mode))
                     }
                     ThemeSwitch(
                         isDarkTheme = darkTheme,
@@ -142,7 +143,7 @@ fun ProfileScreen(
                     )
                     Spacer(modifier = Modifier.width(16.dp))
                     Text(
-                        text = "Sign out",
+                        text = stringResource(R.string.sign_out),
                         color = Color.Red,
                         modifier = Modifier.clickable { onSignOut() })
                 }

@@ -73,7 +73,7 @@ fun OnboardingScreen(
                 )
                 Spacer(modifier = Modifier.height(100.dp))
                 Text(
-                    text = "Your Reading Odyssey Begins: Discover & Sign In",
+                    text = stringResource(R.string.sign_in_phrase),
                     color = Color.Gray,
                     fontSize = 20.sp,
                     textAlign = TextAlign.Center
@@ -87,16 +87,10 @@ fun OnboardingScreen(
                         containerColor = Color(0xFF3295DD)
                     )
                 ) {
-                    Text(text = "Sign in")
+                    Text(text = stringResource(R.string.sign_in))
                 }
             }
 
         }
     }
 }
-
-//@Preview
-//@Composable
-//fun OnboardingPreview() {
-//    OnboardingScreen(onSignInClick = {})
-//}

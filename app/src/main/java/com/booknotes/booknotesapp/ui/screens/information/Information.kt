@@ -74,14 +74,20 @@ fun InformationScreen(
     }
     val userId = FirebaseAuth.getInstance().currentUser!!.uid
 
-    val stateFavorite by remember { mutableStateOf(SaveShared.getFavorite(context, bookId, userId)) }
+    val stateFavorite by remember {
+        mutableStateOf(
+            SaveShared.getFavorite(
+                context,
+                bookId,
+                userId
+            )
+        )
+    }
     val icon by remember {
         mutableStateOf(
             if (isFavorite != stateFavorite) {
-                Log.i("ICON", "FILL ICON")
                 Icons.Default.Favorite
             } else {
-                Log.i("ICON", "DON'T FILL ICON")
                 Icons.Default.FavoriteBorder
             }
         )
@@ -102,30 +108,27 @@ fun InformationScreen(
             color = MaterialTheme.colorScheme.background
         ) {
             Column {
-                Info(infoUiState = infoViewModel.infoUiState,
+                Info(
+                    infoUiState = infoViewModel.infoUiState,
                     scrollState = rememberScrollState(),
                     onFavoriteBorderClick = {
                         if (bookItem != null) {
                             infoViewModel.addBookToDatabase(bookItem!!) {
-                                Log.i("DATABASE", "Success insert")
                             }
                         }
                     },
                     onFavoriteClick = {
                         if (bookItem != null) {
                             infoViewModel.deleteBookFromDatabase(bookItem!!) {
-                                Log.i("DATABASE", "Success delete")
                             }
                         }
                     },
                     stateFavorite = stateFavorite,
                     saveSharedFavoriteBorder = {
                         SaveShared.setFavorite(context, bookId, true, userId)
-                        Log.i("SAVESHARED", "$bookId true")
                     },
                     saveSharedFavorite = {
                         SaveShared.setFavorite(context, bookId, false, userId)
-                        Log.i("SAVESHARED", "$bookId false")
                     },
                     icon = icon,
                     retryAction = { infoViewModel.getInfoUiStateByBookId(bookId) },
@@ -235,7 +238,7 @@ fun DetailedInfo(
                 }
                 book.publishedDate?.let {
                     Text(
-                        text = "Published date:\n$it",
+                        text = stringResource(R.string.published_date) + "\n$it",
                         fontSize = 14.sp,
                         color = Color.Gray,
                         modifier = Modifier
@@ -311,12 +314,10 @@ fun MenuItem(
                         iconFavorite = Icons.Default.Favorite
                         saveSharedFavoriteBorder()
                         onFavoriteBorderClick()
-                        Log.i("ONCLICK", "ICON FILL")
                     } else {
                         iconFavorite = Icons.Default.FavoriteBorder
                         saveSharedFavorite()
                         onFavoriteClick()
-                        Log.i("ONCLICK", "ICON DON'T FILL")
                     }
                     isFavoriteIcon = !isFavoriteIcon
                 }

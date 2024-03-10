@@ -25,6 +25,7 @@ import com.booknotes.booknotesapp.ui.screens.presentation.OnboardingScreen
 import com.booknotes.booknotesapp.ui.screens.presentation.ProfileScreen
 import com.booknotes.booknotesapp.ui.screens.presentation.SignInViewModel
 import com.booknotes.booknotesapp.ui.screens.recommendations.RecommendationsScreen
+import com.booknotesapp.booknotesapp.R
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -64,7 +65,8 @@ fun NavigationGraphBottom(
                     lifecycleScope.launch {
                         googleAuthUiClient.signOut()
                     }
-                    Toast.makeText(appContext, "Successful sign out", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(appContext,
+                        appContext.getString(R.string.successful_sign_out), Toast.LENGTH_SHORT).show()
                     navController.navigate(DestinationsBottom.Onboarding.route)
                 },
                 modifier = modifier,
@@ -92,7 +94,8 @@ fun NavigationGraphBottom(
 
             LaunchedEffect(key1 = state.isSignInSuccessful){
                 if (state.isSignInSuccessful) {
-                    Toast.makeText(appContext, "Successful sign in", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(appContext,
+                        appContext.getString(R.string.successful_sign_in), Toast.LENGTH_SHORT).show()
                     navController.navigate(DestinationsBottom.Profile.route)
                     viewModel.resetState()
                 }
