@@ -28,7 +28,7 @@ fun MyBottomNavigation(navController: NavHostController) {
     BottomNavigation(
         backgroundColor = MaterialTheme.colorScheme.background,//Color.DarkGray,
         contentColor = MaterialTheme.colorScheme.primary,//Color.Black,
-        modifier = Modifier.height(70.dp)
+        modifier = Modifier.height(50.dp)
     ) {
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         val currentRoute = navBackStackEntry?.destination?.route
@@ -39,14 +39,14 @@ fun MyBottomNavigation(navController: NavHostController) {
                         Icon(
                             painter = painterResource(id = screen.icon),
                             contentDescription = screen.title,
-                            modifier = Modifier.size(40.dp)
+                            modifier = Modifier.size(25.dp)
                         )
                     } else {
                         Icon(
                             painter = painterResource(id = screen.icon),
                             tint = Color(0xFF3295DD),
                             contentDescription = screen.title,
-                            modifier = Modifier.size(40.dp)
+                            modifier = Modifier.size(25.dp)
                         )
                     }
                 },

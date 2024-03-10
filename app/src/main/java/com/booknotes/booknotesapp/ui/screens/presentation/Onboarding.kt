@@ -74,7 +74,7 @@ fun OnboardingScreen(
                 Spacer(modifier = Modifier.height(100.dp))
                 Text(
                     text = "Your Reading Odyssey Begins: Discover & Sign In",
-                    color = Color.White,
+                    color = Color.Gray,
                     fontSize = 20.sp,
                     textAlign = TextAlign.Center
                 )

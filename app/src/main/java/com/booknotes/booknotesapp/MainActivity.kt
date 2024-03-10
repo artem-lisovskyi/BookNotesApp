@@ -36,7 +36,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            val userId = FirebaseAuth.getInstance().currentUser!!.uid
+            val userId = FirebaseAuth.getInstance().currentUser?.uid ?: "default"
             val theme = SaveShared.getTheme(
                 applicationContext,
                 "theme",
