@@ -41,7 +41,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import com.booknotes.booknotesapp.data.SaveShared
 import com.booknotes.booknotesapp.data.retrofit.Book
 import com.booknotes.booknotesapp.data.room.BookEntity
 import com.booknotes.booknotesapp.ui.MyTopAppBarWithBackButton
@@ -64,33 +63,13 @@ fun InformationScreen(
     val infoViewModel: InfoViewModel = viewModel(factory = InfoViewModel.Factory)
     infoViewModel.getInfoUiStateByBookId(bookId!!)
 
+
     var bookItem by remember { mutableStateOf<BookEntity?>(null) }
     LaunchedEffect(Unit) {
         bookItem = infoViewModel.getBookFromRetrofit(bookId)
     }
-    val isFavorite by remember {
-        mutableStateOf(false)
-    }
-    val userId = FirebaseAuth.getInstance().currentUser!!.uid
 
-    val stateFavorite by remember {
-        mutableStateOf(
-            SaveShared.getFavorite(
-                context,
-                bookId,
-                userId
-            )
-        )
-    }
-    val icon by remember {
-        mutableStateOf(
-            if (isFavorite != stateFavorite) {
-                Icons.Default.Favorite
-            } else {
-                Icons.Default.FavoriteBorder
-            }
-        )
-    }
+    val userId = FirebaseAuth.getInstance().currentUser!!.uid
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
@@ -110,28 +89,11 @@ fun InformationScreen(
                 Info(
                     infoUiState = infoViewModel.infoUiState,
                     scrollState = rememberScrollState(),
-                    onFavoriteBorderClick = {
-                        if (bookItem != null) {
-                            infoViewModel.addBookToDatabase(bookItem!!) {
-                            }
-                        }
-                    },
+                    getImageVector = { infoViewModel.getImageVector(context, bookId, userId) },
                     onFavoriteClick = {
-                        if (bookItem != null) {
-                            infoViewModel.deleteBookFromDatabase(bookItem!!) {
-                            }
-                        }
+                        infoViewModel.toggleFavorite(context, bookId, userId, bookItem!!)
                     },
-                    stateFavorite = stateFavorite,
-                    saveSharedFavoriteBorder = {
-                        SaveShared.setFavorite(context, bookId, true, userId)
-                    },
-                    saveSharedFavorite = {
-                        SaveShared.setFavorite(context, bookId, false, userId)
-                    },
-                    icon = icon,
-                    retryAction = { infoViewModel.getInfoUiStateByBookId(bookId) },
-                    isFavorite = isFavorite
+                    retryAction = { infoViewModel.getInfoUiStateByBookId(bookId) }
                 )
             }
         }
@@ -143,14 +105,9 @@ fun Info(
     infoUiState: InfoUiState,
     retryAction: () -> Unit,
     scrollState: ScrollState,
-    onFavoriteClick: () -> Unit,
-    onFavoriteBorderClick: () -> Unit,
-    saveSharedFavorite: () -> Unit,
-    saveSharedFavoriteBorder: () -> Unit,
-    stateFavorite: Boolean,
-    icon: ImageVector,
-    modifier: Modifier = Modifier,
-    isFavorite: Boolean
+    onFavoriteClick: () -> Boolean,
+    getImageVector: () -> ImageVector,
+    modifier: Modifier = Modifier
 ) {
     when (infoUiState) {
         is InfoUiState.Loading -> {
@@ -162,13 +119,8 @@ fun Info(
                 book = infoUiState.bookById,
                 scrollState = scrollState,
                 onFavoriteClick = onFavoriteClick,
-                onFavoriteBorderClick = onFavoriteBorderClick,
-                stateFavorite = stateFavorite,
-                saveSharedFavorite = saveSharedFavorite,
-                icon = icon,
-                saveSharedFavoriteBorder = saveSharedFavoriteBorder,
-                modifier = modifier,
-                isFavorite = isFavorite
+                getImageVector = getImageVector,
+                modifier = modifier
             )
         }
 
@@ -184,14 +136,9 @@ fun Info(
 fun DetailedInfo(
     book: Book,
     scrollState: ScrollState,
-    onFavoriteClick: () -> Unit,
-    onFavoriteBorderClick: () -> Unit,
-    saveSharedFavorite: () -> Unit,
-    saveSharedFavoriteBorder: () -> Unit,
-    stateFavorite: Boolean,
-    icon: ImageVector,
-    modifier: Modifier,
-    isFavorite: Boolean
+    onFavoriteClick: () -> Boolean,
+    getImageVector: () -> ImageVector,
+    modifier: Modifier
 ) {
     Column(
         modifier
@@ -262,12 +209,7 @@ fun DetailedInfo(
         }
         MenuItem(
             onFavoriteClick = onFavoriteClick,
-            onFavoriteBorderClick = onFavoriteBorderClick,
-            saveSharedFavorite = saveSharedFavorite,
-            saveSharedFavoriteBorder = saveSharedFavoriteBorder,
-            icon = icon,
-            stateFavorite = stateFavorite,
-            isFavorite = isFavorite
+            getImageVector = getImageVector
         )
         book.description?.let {
             Text(
@@ -291,16 +233,10 @@ fun DetailedInfo(
 @Composable
 fun MenuItem(
     modifier: Modifier = Modifier,
-    onFavoriteClick: () -> Unit,
-    onFavoriteBorderClick: () -> Unit,
-    saveSharedFavorite: () -> Unit,
-    saveSharedFavoriteBorder: () -> Unit,
-    icon: ImageVector,
-    stateFavorite: Boolean,
-    isFavorite: Boolean
+    onFavoriteClick: () -> Boolean,
+    getImageVector: () -> ImageVector
 ) {
-    var iconFavorite by remember { mutableStateOf(icon) }
-    var isFavoriteIcon by remember { mutableStateOf(isFavorite) }
+    var favoriteIcon by remember { mutableStateOf(getImageVector()) }
 
     Row(
         modifier = modifier
@@ -308,8 +244,8 @@ fun MenuItem(
             .padding(top = 8.dp)
     ) {
         Icon(
-            imageVector = iconFavorite,
-            tint = if (iconFavorite == Icons.Default.Favorite) {
+            imageVector = favoriteIcon,
+            tint = if (favoriteIcon == Icons.Default.Favorite) {
                 Color(0xFFC51717)
             } else {
                 Color.Gray
@@ -319,18 +255,12 @@ fun MenuItem(
                 .padding(top = 8.dp, start = 16.dp, end = 8.dp)
                 .size(50.dp)
                 .clickable {
-                    if (isFavoriteIcon == stateFavorite) {
-                        iconFavorite = Icons.Default.Favorite
-                        saveSharedFavoriteBorder()
-                        onFavoriteBorderClick()
+                    favoriteIcon = if (onFavoriteClick()) {
+                        Icons.Default.Favorite
                     } else {
-                        iconFavorite = Icons.Default.FavoriteBorder
-                        saveSharedFavorite()
-                        onFavoriteClick()
+                        Icons.Default.FavoriteBorder
                     }
-                    isFavoriteIcon = !isFavoriteIcon
                 }
-
         )
 
 //        Column(modifier = modifier.clickable { }) {

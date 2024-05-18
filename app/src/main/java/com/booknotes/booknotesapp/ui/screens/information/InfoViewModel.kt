@@ -1,8 +1,14 @@
 package com.booknotes.booknotesapp.ui.screens.information
 
+import android.content.Context
+import android.util.Log
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -10,6 +16,7 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.navigation.NavHostController
 import com.booknotes.booknotesapp.BooksApplication
+import com.booknotes.booknotesapp.data.SaveShared
 import com.booknotes.booknotesapp.data.retrofit.Book
 import com.booknotes.booknotesapp.data.retrofit.BooksRepositoryRetrofit
 import com.booknotes.booknotesapp.data.room.BookEntity
@@ -53,6 +60,42 @@ class InfoViewModel(
 //        isFavourite = !isFavourite
 //        return favotiteIcon
 //    }
+
+    fun toggleFavorite(
+        context: Context,
+        bookId: String,
+        userId: String,
+        bookItem: BookEntity
+//        onFavoriteChanged: (Boolean) -> Unit
+    ): Boolean {
+        val isFavorite = getFavoriteState(context, bookId, userId)
+        if (isFavorite) {
+            // Remove from favorites
+            deleteBookFromDatabase(bookItem) {
+                SaveShared.setFavorite(context, bookId, false, userId)
+                Log.i("DATABASE", "Success delete record")
+            }
+        } else {
+            // Add to favorites
+            addBookToDatabase(bookItem) {
+                SaveShared.setFavorite(context, bookId, true, userId)
+                Log.i("DATABASE", "Success insert new record")
+            }
+        }
+        return !isFavorite
+    }
+
+    private fun getFavoriteState(context: Context, bookId: String, userId: String): Boolean {
+        return SaveShared.getFavorite(context, bookId, userId)
+    }
+
+    fun getImageVector(context: Context, bookId: String, userId: String): ImageVector {
+        return if (getFavoriteState(context, bookId, userId)) {
+            Icons.Default.Favorite
+        } else {
+            Icons.Default.FavoriteBorder
+        }
+    }
 
     fun getInfoUiStateByBookId(bookId: String = "") {
         viewModelScope.launch {
