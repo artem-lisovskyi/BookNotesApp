@@ -131,8 +131,10 @@ fun ProfileScreen(
                 )
                 Row(
                     modifier = Modifier
+                        .fillMaxWidth()
                         .height(80.dp)
-                        .padding(8.dp),
+                        .padding(8.dp)
+                        .clickable { onSignOut() },
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
@@ -144,11 +146,9 @@ fun ProfileScreen(
                     Spacer(modifier = Modifier.width(16.dp))
                     Text(
                         text = stringResource(R.string.sign_out),
-                        color = Color.Red,
-                        modifier = Modifier.clickable { onSignOut() })
+                        color = Color.Red
+                    )
                 }
-
-
             }
 
         }

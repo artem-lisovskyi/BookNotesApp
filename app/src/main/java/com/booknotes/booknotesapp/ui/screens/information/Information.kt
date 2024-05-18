@@ -1,7 +1,6 @@
 package com.booknotes.booknotesapp.ui.screens.information
 
 import android.content.Context
-import android.util.Log
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -283,7 +282,7 @@ fun DetailedInfo(
                 color = Color.Gray,
                 modifier = modifier
                     .fillMaxWidth()
-                    .padding(top = 24.dp)
+                    .padding(top = 16.dp)
             )
         }
     }
@@ -302,13 +301,23 @@ fun MenuItem(
 ) {
     var iconFavorite by remember { mutableStateOf(icon) }
     var isFavoriteIcon by remember { mutableStateOf(isFavorite) }
+
     Row(
         modifier = modifier
             .fillMaxWidth()
             .padding(top = 8.dp)
     ) {
-        Column(
+        Icon(
+            imageVector = iconFavorite,
+            tint = if (iconFavorite == Icons.Default.Favorite) {
+                Color(0xFFC51717)
+            } else {
+                Color.Gray
+            },
+            contentDescription = stringResource(R.string.don_t_favorite),
             modifier = modifier
+                .padding(top = 8.dp, start = 16.dp, end = 8.dp)
+                .size(50.dp)
                 .clickable {
                     if (isFavoriteIcon == stateFavorite) {
                         iconFavorite = Icons.Default.Favorite
@@ -321,24 +330,8 @@ fun MenuItem(
                     }
                     isFavoriteIcon = !isFavoriteIcon
                 }
-        ) {
-            Icon(
-                imageVector = iconFavorite,
-                tint = Color(0xFFC51717),
-                contentDescription = stringResource(R.string.don_t_favorite),
-                modifier = modifier
-                    .padding(top = 8.dp, start = 16.dp, end = 8.dp)
-                    .size(60.dp)
 
-            )
-//            Text(
-//                text = "Add to favorite",
-//                fontSize = 8.sp,
-//                color = Color.Gray,
-//                modifier = Modifier
-//                    .padding(top = 8.dp)
-//            )
-        }
+        )
 
 //        Column(modifier = modifier.clickable { }) {
 //            Icon(

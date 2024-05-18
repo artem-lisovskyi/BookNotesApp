@@ -4,7 +4,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -42,6 +41,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
+import coil.compose.AsyncImagePainter
 import coil.request.ImageRequest
 import com.booknotes.booknotesapp.data.retrofit.Book
 import com.booknotes.booknotesapp.ui.MyTopAppBar
@@ -171,8 +171,9 @@ fun ListBooks(
 ) {
     LazyColumn(
         modifier = modifier
-            .fillMaxHeight()
-            .padding(top = 16.dp)
+            .fillMaxSize()
+            .padding(top = 16.dp),
+
     ) {
         itemsIndexed(books) { _, book ->
             BookItem(book, modifier, onItemClick)
@@ -185,7 +186,7 @@ fun ListBooks(
 fun BookItem(
     book: Book,
     modifier: Modifier = Modifier,
-    onItemClick: (String) -> Unit
+    onItemClick: (String) -> Unit,
 ) {
     Row(
         modifier = modifier

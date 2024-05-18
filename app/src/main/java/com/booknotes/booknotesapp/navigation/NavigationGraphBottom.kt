@@ -49,14 +49,15 @@ fun NavigationGraphBottom(
             DestinationsBottom.Onboarding.route
         }
     ) {
-        composable(DestinationsBottom.Home.route) {
+        composable(DestinationsBottom.Home.route,
+            ) {
             HomeScreen(navController = navController, modifier = modifier, bottomNav = bottomNav)
         }
         composable(DestinationsBottom.Favorites.route) {
             FavoritesScreen(navController = navController, modifier = modifier, bottomNav = bottomNav)
         }
         composable(DestinationsBottom.Recommendations.route) {
-            RecommendationsScreen(navController, modifier, bottomNav = bottomNav)
+            RecommendationsScreen(navController = navController,modifier=modifier, bottomNav = bottomNav)
         }
         composable(DestinationsBottom.Profile.route) {
             ProfileScreen(
