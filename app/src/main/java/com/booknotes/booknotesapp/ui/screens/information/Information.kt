@@ -3,6 +3,7 @@ package com.booknotes.booknotesapp.ui.screens.information
 import android.content.Context
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -13,6 +14,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -24,6 +27,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -63,10 +67,11 @@ fun InformationScreen(
     val infoViewModel: InfoViewModel = viewModel(factory = InfoViewModel.Factory)
     infoViewModel.getInfoUiStateByBookId(bookId!!)
 
-
-    var bookItem by remember { mutableStateOf<BookEntity?>(null) }
-    LaunchedEffect(Unit) {
-        bookItem = infoViewModel.getBookFromRetrofit(bookId)
+    val bookItem by produceState<BookEntity?>(initialValue = null, bookId) {
+        value = infoViewModel.getBookFromRetrofit(bookId)
+    }
+    LaunchedEffect(bookId) {
+        infoViewModel.getBookFromRetrofit(bookId)
     }
 
     val userId = FirebaseAuth.getInstance().currentUser!!.uid
@@ -239,6 +244,7 @@ fun MenuItem(
     var favoriteIcon by remember { mutableStateOf(getImageVector()) }
 
     Row(
+        horizontalArrangement = Arrangement.SpaceBetween,
         modifier = modifier
             .fillMaxWidth()
             .padding(top = 8.dp)
@@ -252,7 +258,7 @@ fun MenuItem(
             },
             contentDescription = stringResource(R.string.don_t_favorite),
             modifier = modifier
-                .padding(top = 8.dp, start = 16.dp, end = 8.dp)
+                .padding(top = 8.dp, start = 16.dp)
                 .size(50.dp)
                 .clickable {
                     favoriteIcon = if (onFavoriteClick()) {
@@ -263,38 +269,24 @@ fun MenuItem(
                 }
         )
 
-//        Column(modifier = modifier.clickable { }) {
-//            Icon(
-//                imageVector = Icons.Default.Check,
-//                contentDescription = stringResource(R.string.don_t_favorite),
-//                modifier = modifier
-//                    .size(50.dp)
-//            )
-//            Text(
-//                text = "Mark as read",
-//                fontSize = 8.sp,
-//                color = Color.White,
-//                modifier = Modifier
-//                    .padding(top = 8.dp)
-//            )
-//        }
-//
-//        Column(modifier = modifier.clickable { }) {
-//
-//
-//            Icon(
-//                imageVector = Icons.Default.ArrowForward,
-//                contentDescription = stringResource(R.string.don_t_favorite),
-//                modifier = modifier
-//                    .size(50.dp)
-//            )
-//            Text(
-//                text = "Go to website",
-//                fontSize = 8.sp,
-//                color = Color.White,
-//                modifier = Modifier
-//                    .padding(top = 8.dp)
-//            )
-//        }
+        Icon(
+            imageVector = Icons.Default.Check,
+            contentDescription = stringResource(R.string.don_t_favorite),
+            tint = Color.Gray,
+            modifier = modifier
+                .padding(top = 8.dp)
+                .size(50.dp)
+                .clickable { }
+        )
+
+        Icon(
+            imageVector = Icons.Default.ArrowForward,
+            tint =Color.Gray,
+            contentDescription = stringResource(R.string.don_t_favorite),
+            modifier = modifier
+                .padding(top = 8.dp, end = 16.dp)
+                .size(50.dp)
+                .clickable { }
+        )
     }
 }

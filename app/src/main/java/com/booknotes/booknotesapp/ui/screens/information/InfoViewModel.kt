@@ -42,31 +42,11 @@ class InfoViewModel(
     var infoUiState: InfoUiState by mutableStateOf(InfoUiState.Loading)
         private set
 
-//    fun onFavoriteClick(context: Context, bookItem: Book, icon: ImageVector): ImageVector {
-//        var favotiteIcon = icon
-//        if (isFavourite == getSharedPreferences(context, bookItem.id)) {
-//            favotiteIcon = Icons.Default.Favorite
-//            SaveShared.setFavorite(context, bookItem.id, true)
-//            addBookToDatabase(bookItem) {
-//                Log.i("DATABASE", "Success insert new record")
-//            }
-//        } else {
-//            favotiteIcon = Icons.Default.FavoriteBorder
-//            SaveShared.setFavorite(context, bookItem.id, false)
-//            deleteBookFromDatabase(bookItem) {
-//                Log.i("DATABASE", "Success delete record")
-//            }
-//        }
-//        isFavourite = !isFavourite
-//        return favotiteIcon
-//    }
-
     fun toggleFavorite(
         context: Context,
         bookId: String,
         userId: String,
         bookItem: BookEntity
-//        onFavoriteChanged: (Boolean) -> Unit
     ): Boolean {
         val isFavorite = getFavoriteState(context, bookId, userId)
         if (isFavorite) {
@@ -109,7 +89,7 @@ class InfoViewModel(
         }
     }
 
-    fun addBookToDatabase(bookItem: BookEntity, onSuccess: () -> Unit) {
+    private fun addBookToDatabase(bookItem: BookEntity, onSuccess: () -> Unit) {
         viewModelScope.launch(Dispatchers.IO) {
             booksRepositoryRoom.insertFavouriteBook(bookItem = bookItem) {
                 onSuccess()
@@ -118,7 +98,7 @@ class InfoViewModel(
 
     }
 
-    fun deleteBookFromDatabase(bookItem: BookEntity, onSuccess: () -> Unit) {
+    private fun deleteBookFromDatabase(bookItem: BookEntity, onSuccess: () -> Unit) {
         viewModelScope.launch(Dispatchers.IO) {
             booksRepositoryRoom.deleteFavouriteBook(bookItem = bookItem) {
                 onSuccess()
