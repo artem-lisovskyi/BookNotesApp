@@ -1,10 +1,5 @@
 package com.booknotes.booknotesapp.ui.screens.home
 
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.State
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
@@ -16,6 +11,9 @@ import com.booknotes.booknotesapp.BooksApplication
 import com.booknotes.booknotesapp.data.retrofit.Book
 import com.booknotes.booknotesapp.data.retrofit.BooksRepositoryRetrofit
 import com.booknotes.booknotesapp.navigation.DestinationsBottom
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException
@@ -31,12 +29,14 @@ class HomeViewModel(
     private val booksRepositoryRetrofit: BooksRepositoryRetrofit
 ) : ViewModel() {
 
-    var homeUiState: HomeUiState by mutableStateOf(HomeUiState.Loading)
-        private set
+    //    var homeUiState: HomeUiState by mutableStateOf(HomeUiState.Loading)
+//        private set
+    private val _homeUiState = MutableStateFlow<HomeUiState>(HomeUiState.Loading)
+    val homeUiState: StateFlow<HomeUiState> = _homeUiState.asStateFlow()
     private var bookId = ""
 
-    private val _searchTextState: MutableState<String> = mutableStateOf(value = "")
-    val searchTextState: State<String> = _searchTextState
+    private val _searchTextState = MutableStateFlow("")
+    val searchTextState: StateFlow<String> = _searchTextState.asStateFlow()
 
 
     init {
@@ -46,15 +46,14 @@ class HomeViewModel(
 
     fun getBooks(
         query: String? = null,
-        maxResults: Int = 40,
+        maxResults: Int = 15,
         langRestrict: String = "en",
         orderBy: String = "relevance"
     ) {
         viewModelScope.launch {
-            homeUiState = HomeUiState.Loading
-            homeUiState = try {
-                HomeUiState.Success(
-                    booksRepositoryRetrofit.getBooks(
+            _homeUiState.value = HomeUiState.Loading
+            try {
+                val books = booksRepositoryRetrofit.getBooks(
                         query = if (query.isNullOrBlank()) {
                             "subject:fiction"
                         } else {
@@ -63,12 +62,12 @@ class HomeViewModel(
                         maxResults,
                         langRestrict,
                         orderBy
-                    )
                 )
+                _homeUiState.value = HomeUiState.Success(books)
             } catch (e: IOException) {
-                HomeUiState.Error
+                _homeUiState.value = HomeUiState.Error
             } catch (e: HttpException) {
-                HomeUiState.Error
+                _homeUiState.value = HomeUiState.Error
             }
         }
     }
@@ -101,3 +100,5 @@ class HomeViewModel(
     }
 
 }
+
+

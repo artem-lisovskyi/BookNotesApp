@@ -10,22 +10,23 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -41,7 +42,6 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
-import coil.compose.AsyncImagePainter
 import coil.request.ImageRequest
 import com.booknotes.booknotesapp.data.retrofit.Book
 import com.booknotes.booknotesapp.ui.MyTopAppBar
@@ -58,7 +58,8 @@ fun HomeScreen(
 ) {
     val homeViewModel: HomeViewModel =
         viewModel(factory = HomeViewModel.Factory)
-    val searchTextState = homeViewModel.searchTextState
+    val searchTextState by homeViewModel.searchTextState.collectAsState()
+    val homeUiState by homeViewModel.homeUiState.collectAsState()
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
@@ -73,23 +74,18 @@ fun HomeScreen(
         ) {
             Column {
                 TextField(
-                    homeViewModel = homeViewModel,
-                    search = searchTextState.value,
-                    onTextChange = {
-                        homeViewModel.updateSearchTextState(newValue = it)
-                    },
-                    onSearchClicked = {
-                        homeViewModel.getBooks(it)
-                    }
+                    search = searchTextState,
+                    onTextChange = homeViewModel::updateSearchTextState,
+                    onSearchClicked = homeViewModel::getBooks
                 )
-                Home(homeUiState = homeViewModel.homeUiState,
-                    retryAction = { homeViewModel.getBooks() },
-                    onItemClick = {
+                Home(homeUiState = homeUiState,
+                    retryAction = homeViewModel::getBooks,
+                    onItemClick = { bookId ->
                         homeViewModel.navigateToScreen(
                             navController = navController,
-                            bookId = it
+                            bookId = bookId
                         )
-                        homeViewModel.setId(it)
+                        homeViewModel.setId(bookId)
                     })
             }
         }
@@ -105,24 +101,14 @@ fun Home(
     modifier: Modifier = Modifier
 ) {
     when (homeUiState) {
-        is HomeUiState.Loading -> {
-            LoadingIndicator(modifier)
-        }
+        is HomeUiState.Loading -> LoadingIndicator(modifier)
+        is HomeUiState.Success -> ListBooks(
+            books = homeUiState.bookSearch,
+            modifier = modifier,
+            onItemClick = onItemClick
+        )
 
-        is HomeUiState.Success -> {
-            ListBooks(
-                books = homeUiState.bookSearch,
-                modifier = modifier,
-                onItemClick = onItemClick
-            )
-        }
-
-        is HomeUiState.Error -> {
-            ErrorScreen(
-                retryAction = retryAction,
-                modifier = modifier
-            )
-        }
+        is HomeUiState.Error -> ErrorScreen(retryAction = retryAction, modifier = modifier)
     }
 }
 
@@ -130,7 +116,6 @@ fun Home(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TextField(
-    homeViewModel: HomeViewModel,
     search: String,
     onTextChange: (String) -> Unit,
     onSearchClicked: (String) -> Unit
@@ -138,15 +123,12 @@ fun TextField(
     OutlinedTextField(
         value = search,
         placeholder = { Text(text = stringResource(R.string.start_searching_for_new_books)) },
-        onValueChange = {
-            onTextChange(it)
-        },
+        onValueChange = onTextChange,
         textStyle = TextStyle(color = Color.Gray),
         trailingIcon = {
-            Button(
+            IconButton(
                 onClick = { onSearchClicked(search) },
-                modifier = Modifier.padding(8.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color.LightGray)
+                modifier = Modifier.padding(8.dp)
             ) {
                 Icon(
                     imageVector = Icons.Default.Search,
@@ -156,7 +138,7 @@ fun TextField(
         },
         maxLines = 1,
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-        keyboardActions = KeyboardActions(onSearch = { homeViewModel.getBooks(search) }),
+        keyboardActions = KeyboardActions(onSearch = { onSearchClicked(search) }),
         modifier = Modifier
             .fillMaxWidth()
             .padding(start = 16.dp, end = 16.dp, bottom = 8.dp, top = 24.dp)
@@ -174,9 +156,9 @@ fun ListBooks(
             .fillMaxSize()
             .padding(top = 16.dp),
 
-    ) {
-        itemsIndexed(books) { _, book ->
-            BookItem(book, modifier, onItemClick)
+        ) {
+        items(books) { book ->
+            BookItem(book = book, onItemClick = onItemClick)
         }
 
     }

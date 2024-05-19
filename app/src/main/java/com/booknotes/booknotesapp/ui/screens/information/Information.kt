@@ -98,7 +98,7 @@ fun InformationScreen(
                     onFavoriteClick = {
                         infoViewModel.toggleFavorite(context, bookId, userId, bookItem!!)
                     },
-                    retryAction = { infoViewModel.getInfoUiStateByBookId(bookId) }
+                    retryAction = infoViewModel::getInfoUiStateByBookId
                 )
             }
         }
