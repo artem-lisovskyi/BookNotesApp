@@ -12,17 +12,20 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -32,6 +35,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -98,6 +102,12 @@ fun InformationScreen(
                     onFavoriteClick = {
                         infoViewModel.toggleFavorite(context, bookId, userId, bookItem!!)
                     },
+                    onLinkClick = { bookLink ->
+                        infoViewModel.openWebsite(
+                            context,
+                            bookLink
+                        )
+                    },
                     retryAction = infoViewModel::getInfoUiStateByBookId
                 )
             }
@@ -112,6 +122,7 @@ fun Info(
     scrollState: ScrollState,
     onFavoriteClick: () -> Boolean,
     getImageVector: () -> ImageVector,
+    onLinkClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     when (infoUiState) {
@@ -125,6 +136,7 @@ fun Info(
                 scrollState = scrollState,
                 onFavoriteClick = onFavoriteClick,
                 getImageVector = getImageVector,
+                onLinkClick = onLinkClick,
                 modifier = modifier
             )
         }
@@ -143,6 +155,7 @@ fun DetailedInfo(
     scrollState: ScrollState,
     onFavoriteClick: () -> Boolean,
     getImageVector: () -> ImageVector,
+    onLinkClick: (String) -> Unit,
     modifier: Modifier
 ) {
     Column(
@@ -214,7 +227,9 @@ fun DetailedInfo(
         }
         MenuItem(
             onFavoriteClick = onFavoriteClick,
-            getImageVector = getImageVector
+            getImageVector = getImageVector,
+            onLinkClick = onLinkClick,
+            bookItem = book
         )
         book.description?.let {
             Text(
@@ -239,9 +254,12 @@ fun DetailedInfo(
 fun MenuItem(
     modifier: Modifier = Modifier,
     onFavoriteClick: () -> Boolean,
-    getImageVector: () -> ImageVector
+    getImageVector: () -> ImageVector,
+    bookItem: Book,
+    onLinkClick: (String) -> Unit
 ) {
     var favoriteIcon by remember { mutableStateOf(getImageVector()) }
+    var showDialog by remember { mutableStateOf(false) }
 
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -254,7 +272,7 @@ fun MenuItem(
             tint = if (favoriteIcon == Icons.Default.Favorite) {
                 Color(0xFFC51717)
             } else {
-                Color.Gray
+                Color(0xff3594d9)
             },
             contentDescription = stringResource(R.string.don_t_favorite),
             modifier = modifier
@@ -271,8 +289,8 @@ fun MenuItem(
 
         Icon(
             imageVector = Icons.Default.Check,
-            contentDescription = stringResource(R.string.don_t_favorite),
-            tint = Color.Gray,
+            contentDescription = stringResource(R.string.read),
+            tint = Color(0xff3594d9),
             modifier = modifier
                 .padding(top = 8.dp)
                 .size(50.dp)
@@ -281,12 +299,66 @@ fun MenuItem(
 
         Icon(
             imageVector = Icons.Default.ArrowForward,
-            tint =Color.Gray,
-            contentDescription = stringResource(R.string.don_t_favorite),
+            tint = Color(0xff3594d9),
+            contentDescription = stringResource(R.string.link),
             modifier = modifier
                 .padding(top = 8.dp, end = 16.dp)
                 .size(50.dp)
-                .clickable { }
+                .clickable {
+                    showDialog = true
+                }
+        )
+    }
+    if (showDialog) {
+        AlertDialog(
+            onDismissRequest = { showDialog = false },
+            containerColor = Color.Black,
+            title = {
+                Text(
+                    text = stringResource(R.string.confirmation),
+                    fontSize = 24.sp,
+                    color = Color.Gray,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 8.dp)
+                )
+            },
+            text = {
+                Text(
+                    text = stringResource(R.string.conformation_question),
+                    fontSize = 16.sp,
+                    color = Color.Gray,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 8.dp)
+                )
+            },
+            shape = RectangleShape,
+            confirmButton = {
+                Button(
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xff3594d9),
+                        contentColor = Color.Black
+                    ),
+                    onClick = {
+                        showDialog = false
+                        onLinkClick(bookItem.previewLink!!)
+                    }
+                ) {
+                    Text("Yes")
+                }
+            },
+            dismissButton = {
+                Button(
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.LightGray,
+                        contentColor = Color.Black
+                    ),
+                    onClick = { showDialog = false }
+                ) {
+                    Text("No")
+                }
+            }
         )
     }
 }

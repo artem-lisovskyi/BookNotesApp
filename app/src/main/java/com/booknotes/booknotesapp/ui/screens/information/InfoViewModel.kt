@@ -1,6 +1,8 @@
 package com.booknotes.booknotesapp.ui.screens.information
 
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.util.Log
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
@@ -9,6 +11,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.core.content.ContextCompat.startActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -125,6 +128,14 @@ class InfoViewModel(
             imageLink = book.imageLink,
             previewLink = book.previewLink
         )
+    }
+
+    fun openWebsite(context: Context, bookLink: String) {
+        val intent = Intent(Intent.ACTION_VIEW).apply {
+            data = Uri.parse(bookLink)
+        }
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        startActivity(context, intent, null)
     }
 
     companion object {

@@ -23,5 +23,9 @@
     <string name="dark_mode">Dark mode</string>
     <string name="sign_out">Sign out</string>
     <string name="making_recommendations">Making recommendations. Please wait!</string>
+    <string name="read">Read</string>
+    <string name="link">Link</string>
+    <string name="confirmation">Confirmation</string>
+    <string name="conformation_question">Do you want to go to the website?</string>
 
 </resources>
