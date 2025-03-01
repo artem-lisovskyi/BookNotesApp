@@ -1,9 +1,9 @@
 package com.booknotes.booknotesapp.ui.screens.information
 
 import android.content.Context
-import android.util.Log
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -12,23 +12,30 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -42,12 +49,11 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import com.booknotes.booknotesapp.data.SaveShared
 import com.booknotes.booknotesapp.data.retrofit.Book
 import com.booknotes.booknotesapp.data.room.BookEntity
 import com.booknotes.booknotesapp.ui.MyTopAppBarWithBackButton
 import com.booknotes.booknotesapp.ui.screens.ErrorScreen
-import com.booknotes.booknotesapp.ui.screens.LoadingScreen
+import com.booknotes.booknotesapp.ui.screens.LoadingIndicator
 import com.booknotesapp.booknotesapp.R
 import com.google.firebase.auth.FirebaseAuth
 import java.util.regex.Pattern
@@ -65,27 +71,14 @@ fun InformationScreen(
     val infoViewModel: InfoViewModel = viewModel(factory = InfoViewModel.Factory)
     infoViewModel.getInfoUiStateByBookId(bookId!!)
 
-    var bookItem by remember { mutableStateOf<BookEntity?>(null) }
-    LaunchedEffect(Unit) {
-        bookItem = infoViewModel.getBookFromRetrofit(bookId)
+    val bookItem by produceState<BookEntity?>(initialValue = null, bookId) {
+        value = infoViewModel.getBookFromRetrofit(bookId)
     }
-    val isFavorite by remember {
-        mutableStateOf(false)
+    LaunchedEffect(bookId) {
+        infoViewModel.getBookFromRetrofit(bookId)
     }
-    val userId = FirebaseAuth.getInstance().currentUser!!.uid
 
-    val stateFavorite by remember { mutableStateOf(SaveShared.getFavorite(context, bookId, userId)) }
-    val icon by remember {
-        mutableStateOf(
-            if (isFavorite != stateFavorite) {
-                Log.i("ICON", "FILL ICON")
-                Icons.Default.Favorite
-            } else {
-                Log.i("ICON", "DON'T FILL ICON")
-                Icons.Default.FavoriteBorder
-            }
-        )
-    }
+    val userId = FirebaseAuth.getInstance().currentUser!!.uid
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
@@ -102,34 +95,20 @@ fun InformationScreen(
             color = MaterialTheme.colorScheme.background
         ) {
             Column {
-                Info(infoUiState = infoViewModel.infoUiState,
+                Info(
+                    infoUiState = infoViewModel.infoUiState,
                     scrollState = rememberScrollState(),
-                    onFavoriteBorderClick = {
-                        if (bookItem != null) {
-                            infoViewModel.addBookToDatabase(bookItem!!) {
-                                Log.i("DATABASE", "Success insert")
-                            }
-                        }
-                    },
+                    getImageVector = { infoViewModel.getImageVector(context, bookId, userId) },
                     onFavoriteClick = {
-                        if (bookItem != null) {
-                            infoViewModel.deleteBookFromDatabase(bookItem!!) {
-                                Log.i("DATABASE", "Success delete")
-                            }
-                        }
+                        infoViewModel.toggleFavorite(context, bookId, userId, bookItem!!)
                     },
-                    stateFavorite = stateFavorite,
-                    saveSharedFavoriteBorder = {
-                        SaveShared.setFavorite(context, bookId, true, userId)
-                        Log.i("SAVESHARED", "$bookId true")
+                    onLinkClick = { bookLink ->
+                        infoViewModel.openWebsite(
+                            context,
+                            bookLink
+                        )
                     },
-                    saveSharedFavorite = {
-                        SaveShared.setFavorite(context, bookId, false, userId)
-                        Log.i("SAVESHARED", "$bookId false")
-                    },
-                    icon = icon,
-                    retryAction = { infoViewModel.getInfoUiStateByBookId(bookId) },
-                    isFavorite = isFavorite
+                    retryAction = infoViewModel::getInfoUiStateByBookId
                 )
             }
         }
@@ -141,18 +120,14 @@ fun Info(
     infoUiState: InfoUiState,
     retryAction: () -> Unit,
     scrollState: ScrollState,
-    onFavoriteClick: () -> Unit,
-    onFavoriteBorderClick: () -> Unit,
-    saveSharedFavorite: () -> Unit,
-    saveSharedFavoriteBorder: () -> Unit,
-    stateFavorite: Boolean,
-    icon: ImageVector,
-    modifier: Modifier = Modifier,
-    isFavorite: Boolean
+    onFavoriteClick: () -> Boolean,
+    getImageVector: () -> ImageVector,
+    onLinkClick: (String) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     when (infoUiState) {
         is InfoUiState.Loading -> {
-            LoadingScreen(modifier)
+            LoadingIndicator(modifier)
         }
 
         is InfoUiState.Success -> {
@@ -160,13 +135,9 @@ fun Info(
                 book = infoUiState.bookById,
                 scrollState = scrollState,
                 onFavoriteClick = onFavoriteClick,
-                onFavoriteBorderClick = onFavoriteBorderClick,
-                stateFavorite = stateFavorite,
-                saveSharedFavorite = saveSharedFavorite,
-                icon = icon,
-                saveSharedFavoriteBorder = saveSharedFavoriteBorder,
-                modifier = modifier,
-                isFavorite = isFavorite
+                getImageVector = getImageVector,
+                onLinkClick = onLinkClick,
+                modifier = modifier
             )
         }
 
@@ -182,14 +153,10 @@ fun Info(
 fun DetailedInfo(
     book: Book,
     scrollState: ScrollState,
-    onFavoriteClick: () -> Unit,
-    onFavoriteBorderClick: () -> Unit,
-    saveSharedFavorite: () -> Unit,
-    saveSharedFavoriteBorder: () -> Unit,
-    stateFavorite: Boolean,
-    icon: ImageVector,
-    modifier: Modifier,
-    isFavorite: Boolean
+    onFavoriteClick: () -> Boolean,
+    getImageVector: () -> ImageVector,
+    onLinkClick: (String) -> Unit,
+    modifier: Modifier
 ) {
     Column(
         modifier
@@ -235,7 +202,7 @@ fun DetailedInfo(
                 }
                 book.publishedDate?.let {
                     Text(
-                        text = "Published date:\n$it",
+                        text = stringResource(R.string.published_date) + "\n$it",
                         fontSize = 14.sp,
                         color = Color.Gray,
                         modifier = Modifier
@@ -260,12 +227,9 @@ fun DetailedInfo(
         }
         MenuItem(
             onFavoriteClick = onFavoriteClick,
-            onFavoriteBorderClick = onFavoriteBorderClick,
-            saveSharedFavorite = saveSharedFavorite,
-            saveSharedFavoriteBorder = saveSharedFavoriteBorder,
-            icon = icon,
-            stateFavorite = stateFavorite,
-            isFavorite = isFavorite
+            getImageVector = getImageVector,
+            onLinkClick = onLinkClick,
+            bookItem = book
         )
         book.description?.let {
             Text(
@@ -280,7 +244,7 @@ fun DetailedInfo(
                 color = Color.Gray,
                 modifier = modifier
                     .fillMaxWidth()
-                    .padding(top = 24.dp)
+                    .padding(top = 16.dp)
             )
         }
     }
@@ -289,85 +253,112 @@ fun DetailedInfo(
 @Composable
 fun MenuItem(
     modifier: Modifier = Modifier,
-    onFavoriteClick: () -> Unit,
-    onFavoriteBorderClick: () -> Unit,
-    saveSharedFavorite: () -> Unit,
-    saveSharedFavoriteBorder: () -> Unit,
-    icon: ImageVector,
-    stateFavorite: Boolean,
-    isFavorite: Boolean
+    onFavoriteClick: () -> Boolean,
+    getImageVector: () -> ImageVector,
+    bookItem: Book,
+    onLinkClick: (String) -> Unit
 ) {
-    var iconFavorite by remember { mutableStateOf(icon) }
-    var isFavoriteIcon by remember { mutableStateOf(isFavorite) }
+    var favoriteIcon by remember { mutableStateOf(getImageVector()) }
+    var showDialog by remember { mutableStateOf(false) }
+
     Row(
+        horizontalArrangement = Arrangement.SpaceBetween,
         modifier = modifier
             .fillMaxWidth()
             .padding(top = 8.dp)
     ) {
-        Column(
+        Icon(
+            imageVector = favoriteIcon,
+            tint = if (favoriteIcon == Icons.Default.Favorite) {
+                Color(0xFFC51717)
+            } else {
+                Color(0xff3594d9)
+            },
+            contentDescription = stringResource(R.string.don_t_favorite),
             modifier = modifier
+                .padding(top = 8.dp, start = 16.dp)
+                .size(50.dp)
                 .clickable {
-                    if (isFavoriteIcon == stateFavorite) {
-                        iconFavorite = Icons.Default.Favorite
-                        saveSharedFavoriteBorder()
-                        onFavoriteBorderClick()
-                        Log.i("ONCLICK", "ICON FILL")
+                    favoriteIcon = if (onFavoriteClick()) {
+                        Icons.Default.Favorite
                     } else {
-                        iconFavorite = Icons.Default.FavoriteBorder
-                        saveSharedFavorite()
-                        onFavoriteClick()
-                        Log.i("ONCLICK", "ICON DON'T FILL")
+                        Icons.Default.FavoriteBorder
                     }
-                    isFavoriteIcon = !isFavoriteIcon
                 }
-        ) {
-            Icon(
-                imageVector = iconFavorite,
-                contentDescription = stringResource(R.string.don_t_favorite),
-                modifier = modifier
-                    .size(50.dp)
-            )
-            Text(
-                text = "Add to favorite",
-                fontSize = 8.sp,
-                color = Color.Gray,
-                modifier = Modifier
-                    .padding(top = 8.dp)
-            )
-        }
+        )
 
-//        Column(modifier = modifier.clickable { }) {
-//            Icon(
-//                imageVector = Icons.Default.Check,
-//                contentDescription = stringResource(R.string.don_t_favorite),
-//                modifier = modifier
-//                    .size(50.dp)
-//            )
-//            Text(
-//                text = "Mark as read",
-//                fontSize = 8.sp,
-//                color = Color.White,
-//                modifier = Modifier
-//                    .padding(top = 8.dp)
-//            )
-//        }
-//
-//        Column(modifier = modifier.clickable { }) {
-//
-//
-//            Icon(
-//                imageVector = Icons.Default.ArrowForward,
-//                contentDescription = stringResource(R.string.don_t_favorite),
-//                modifier = modifier
-//                    .size(50.dp)
-//            )
-//            Text(
-//                text = "Go to website",
-//                fontSize = 8.sp,
-//                color = Color.White,
-//                modifier = Modifier
-//                    .padding(top = 8.dp)
-//            )
-//        }
+        Icon(
+            imageVector = Icons.Default.Check,
+            contentDescription = stringResource(R.string.read),
+            tint = Color(0xff3594d9),
+            modifier = modifier
+                .padding(top = 8.dp)
+                .size(50.dp)
+                .clickable { }
+        )
+
+        Icon(
+            imageVector = Icons.Default.ArrowForward,
+            tint = Color(0xff3594d9),
+            contentDescription = stringResource(R.string.link),
+            modifier = modifier
+                .padding(top = 8.dp, end = 16.dp)
+                .size(50.dp)
+                .clickable {
+                    showDialog = true
+                }
+        )
+    }
+    if (showDialog) {
+        AlertDialog(
+            onDismissRequest = { showDialog = false },
+            containerColor = Color.Black,
+            title = {
+                Text(
+                    text = stringResource(R.string.confirmation),
+                    fontSize = 24.sp,
+                    color = Color.Gray,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 8.dp)
+                )
+            },
+            text = {
+                Text(
+                    text = stringResource(R.string.conformation_question),
+                    fontSize = 16.sp,
+                    color = Color.Gray,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 8.dp)
+                )
+            },
+            shape = RectangleShape,
+            confirmButton = {
+                Button(
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xff3594d9),
+                        contentColor = Color.Black
+                    ),
+                    onClick = {
+                        showDialog = false
+                        onLinkClick(bookItem.previewLink!!)
+                    }
+                ) {
+                    Text("Yes")
+                }
+            },
+            dismissButton = {
+                Button(
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.LightGray,
+                        contentColor = Color.Black
+                    ),
+                    onClick = { showDialog = false }
+                ) {
+                    Text("No")
+                }
+            }
+        )
     }
 }

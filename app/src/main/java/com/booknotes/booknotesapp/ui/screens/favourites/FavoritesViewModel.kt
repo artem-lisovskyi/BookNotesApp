@@ -39,7 +39,7 @@ class FavoritesViewModel(
     }
 
     fun getBooksFromDatabase() {
-        viewModelScope.launch() {
+        viewModelScope.launch {
             favoriteUiState = FavoriteUiState.Loading
             favoriteUiState = try {
                 FavoriteUiState.Success(booksRepositoryRoom.allFavouriteBooks(userId))

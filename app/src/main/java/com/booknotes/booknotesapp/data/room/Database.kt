@@ -48,6 +48,12 @@ interface BookItemDao {
     @Query("SELECT * FROM favourite_books WHERE userId = :userId ")
     fun getAllFavouriteBooks(userId: String): LiveData<List<BookEntity>>
 
+    @Query("SELECT * FROM favourite_books WHERE userId = :userId ")
+    fun getAllFavouriteBooksList(userId: String): List<BookEntity>
+
+    @Query("SELECT COUNT(*) FROM favourite_books WHERE userId = :userId")
+    fun getCount(userId: String): Int
+
 //    @Insert
 //    fun insertAll(vararg bookItems: Favorites)
 //

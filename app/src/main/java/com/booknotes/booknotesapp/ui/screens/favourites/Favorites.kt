@@ -38,7 +38,7 @@ import coil.request.ImageRequest
 import com.booknotes.booknotesapp.data.room.BookEntity
 import com.booknotes.booknotesapp.ui.MyTopAppBar
 import com.booknotes.booknotesapp.ui.screens.ErrorScreen
-import com.booknotes.booknotesapp.ui.screens.LoadingScreen
+import com.booknotes.booknotesapp.ui.screens.LoadingIndicator
 import com.booknotesapp.booknotesapp.R
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -84,7 +84,7 @@ fun Favorite(
 ) {
     when (favoriteUiState) {
         is FavoriteUiState.Loading -> {
-            LoadingScreen(modifier)
+            LoadingIndicator(modifier)
         }
 
         is FavoriteUiState.Success -> {

@@ -25,6 +25,7 @@ import com.booknotes.booknotesapp.ui.screens.presentation.OnboardingScreen
 import com.booknotes.booknotesapp.ui.screens.presentation.ProfileScreen
 import com.booknotes.booknotesapp.ui.screens.presentation.SignInViewModel
 import com.booknotes.booknotesapp.ui.screens.recommendations.RecommendationsScreen
+import com.booknotesapp.booknotesapp.R
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -35,7 +36,9 @@ fun NavigationGraphBottom(
     lifecycleScope: CoroutineScope,
     appContext: Context,
     bottomNav: @Composable () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    darkTheme: Boolean,
+    onThemeUpdated: () -> Unit
 ) {
 
     NavHost(
@@ -46,14 +49,15 @@ fun NavigationGraphBottom(
             DestinationsBottom.Onboarding.route
         }
     ) {
-        composable(DestinationsBottom.Home.route) {
+        composable(DestinationsBottom.Home.route,
+            ) {
             HomeScreen(navController = navController, modifier = modifier, bottomNav = bottomNav)
         }
         composable(DestinationsBottom.Favorites.route) {
             FavoritesScreen(navController = navController, modifier = modifier, bottomNav = bottomNav)
         }
         composable(DestinationsBottom.Recommendations.route) {
-            RecommendationsScreen(navController, modifier, bottomNav = bottomNav)
+            RecommendationsScreen(navController = navController,modifier=modifier, bottomNav = bottomNav)
         }
         composable(DestinationsBottom.Profile.route) {
             ProfileScreen(
@@ -62,12 +66,14 @@ fun NavigationGraphBottom(
                     lifecycleScope.launch {
                         googleAuthUiClient.signOut()
                     }
-                    Toast.makeText(appContext, "Successful sign out", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(appContext,
+                        appContext.getString(R.string.successful_sign_out), Toast.LENGTH_SHORT).show()
                     navController.navigate(DestinationsBottom.Onboarding.route)
                 },
-                navController = navController,
                 modifier = modifier,
-                bottomNav = bottomNav
+                bottomNav = bottomNav,
+                darkTheme = darkTheme,
+                onThemeUpdated = onThemeUpdated
             )
             
         }
@@ -89,7 +95,8 @@ fun NavigationGraphBottom(
 
             LaunchedEffect(key1 = state.isSignInSuccessful){
                 if (state.isSignInSuccessful) {
-                    Toast.makeText(appContext, "Successful sign in", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(appContext,
+                        appContext.getString(R.string.successful_sign_in), Toast.LENGTH_SHORT).show()
                     navController.navigate(DestinationsBottom.Profile.route)
                     viewModel.resetState()
                 }

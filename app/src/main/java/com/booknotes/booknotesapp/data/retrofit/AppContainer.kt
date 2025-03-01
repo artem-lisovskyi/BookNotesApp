@@ -1,11 +1,18 @@
 package com.booknotes.booknotesapp.data.retrofit
 
 import com.booknotes.booknotesapp.network.BooksApi
+import com.booknotes.booknotesapp.network.RecommendationApi
+import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.util.concurrent.TimeUnit
 
 interface AppContainer {
     val booksRepositoryRetrofit: BooksRepositoryRetrofit
+}
+
+interface RecommendContainer {
+    val recommendationRetrofit: RecommendationRetrofit
 }
 
 class DefaultAppContainer : AppContainer {
@@ -22,5 +29,27 @@ class DefaultAppContainer : AppContainer {
 
     override val booksRepositoryRetrofit: BooksRepositoryRetrofit by lazy {
         NetworkBooksRepository(retrofitService)
+    }
+}
+
+class RecommendationAppContainer : RecommendContainer {
+    private val BASE_URL = "http://192.168.1.160:5000/"
+
+    private val okHttpClient = OkHttpClient.Builder()
+        .readTimeout(200, TimeUnit.SECONDS)
+        .build()
+
+    private val retrofit = Retrofit.Builder()
+        .addConverterFactory(GsonConverterFactory.create())
+        .baseUrl(BASE_URL)
+        .client(okHttpClient)
+        .build()
+
+    private val retrofitService: RecommendationApi by lazy {
+        retrofit.create(RecommendationApi::class.java)
+    }
+
+    override val recommendationRetrofit: NetworkRecommendationRepository by lazy {
+        NetworkRecommendationRepository(retrofitService)
     }
 }

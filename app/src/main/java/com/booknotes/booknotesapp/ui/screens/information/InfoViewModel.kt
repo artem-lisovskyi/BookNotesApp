@@ -1,8 +1,17 @@
 package com.booknotes.booknotesapp.ui.screens.information
 
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
+import android.util.Log
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.core.content.ContextCompat.startActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -10,6 +19,7 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.navigation.NavHostController
 import com.booknotes.booknotesapp.BooksApplication
+import com.booknotes.booknotesapp.data.SaveShared
 import com.booknotes.booknotesapp.data.retrofit.Book
 import com.booknotes.booknotesapp.data.retrofit.BooksRepositoryRetrofit
 import com.booknotes.booknotesapp.data.room.BookEntity
@@ -35,24 +45,40 @@ class InfoViewModel(
     var infoUiState: InfoUiState by mutableStateOf(InfoUiState.Loading)
         private set
 
-//    fun onFavoriteClick(context: Context, bookItem: Book, icon: ImageVector): ImageVector {
-//        var favotiteIcon = icon
-//        if (isFavourite == getSharedPreferences(context, bookItem.id)) {
-//            favotiteIcon = Icons.Default.Favorite
-//            SaveShared.setFavorite(context, bookItem.id, true)
-//            addBookToDatabase(bookItem) {
-//                Log.i("DATABASE", "Success insert new record")
-//            }
-//        } else {
-//            favotiteIcon = Icons.Default.FavoriteBorder
-//            SaveShared.setFavorite(context, bookItem.id, false)
-//            deleteBookFromDatabase(bookItem) {
-//                Log.i("DATABASE", "Success delete record")
-//            }
-//        }
-//        isFavourite = !isFavourite
-//        return favotiteIcon
-//    }
+    fun toggleFavorite(
+        context: Context,
+        bookId: String,
+        userId: String,
+        bookItem: BookEntity
+    ): Boolean {
+        val isFavorite = getFavoriteState(context, bookId, userId)
+        if (isFavorite) {
+            // Remove from favorites
+            deleteBookFromDatabase(bookItem) {
+                SaveShared.setFavorite(context, bookId, false, userId)
+                Log.i("DATABASE", "Success delete record")
+            }
+        } else {
+            // Add to favorites
+            addBookToDatabase(bookItem) {
+                SaveShared.setFavorite(context, bookId, true, userId)
+                Log.i("DATABASE", "Success insert new record")
+            }
+        }
+        return !isFavorite
+    }
+
+    private fun getFavoriteState(context: Context, bookId: String, userId: String): Boolean {
+        return SaveShared.getFavorite(context, bookId, userId)
+    }
+
+    fun getImageVector(context: Context, bookId: String, userId: String): ImageVector {
+        return if (getFavoriteState(context, bookId, userId)) {
+            Icons.Default.Favorite
+        } else {
+            Icons.Default.FavoriteBorder
+        }
+    }
 
     fun getInfoUiStateByBookId(bookId: String = "") {
         viewModelScope.launch {
@@ -66,7 +92,7 @@ class InfoViewModel(
         }
     }
 
-    fun addBookToDatabase(bookItem: BookEntity, onSuccess: () -> Unit) {
+    private fun addBookToDatabase(bookItem: BookEntity, onSuccess: () -> Unit) {
         viewModelScope.launch(Dispatchers.IO) {
             booksRepositoryRoom.insertFavouriteBook(bookItem = bookItem) {
                 onSuccess()
@@ -75,7 +101,7 @@ class InfoViewModel(
 
     }
 
-    fun deleteBookFromDatabase(bookItem: BookEntity, onSuccess: () -> Unit) {
+    private fun deleteBookFromDatabase(bookItem: BookEntity, onSuccess: () -> Unit) {
         viewModelScope.launch(Dispatchers.IO) {
             booksRepositoryRoom.deleteFavouriteBook(bookItem = bookItem) {
                 onSuccess()
@@ -102,6 +128,14 @@ class InfoViewModel(
             imageLink = book.imageLink,
             previewLink = book.previewLink
         )
+    }
+
+    fun openWebsite(context: Context, bookLink: String) {
+        val intent = Intent(Intent.ACTION_VIEW).apply {
+            data = Uri.parse(bookLink)
+        }
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        startActivity(context, intent, null)
     }
 
     companion object {
