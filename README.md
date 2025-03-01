@@ -21,8 +21,7 @@ analyze large amounts of user data and behavior to provide more relevant recomme
 The objectives of this project are:
 
 1. **Analyze approaches and methods of machine learning for recommendation systems**.
-2. **Find a suitable dataset with sufficient information about books, users, and their interactions
-   **.
+2. **Find a suitable dataset with sufficient information about books, users, and their interactions**.
 3. **Develop a hybrid recommendation algorithm and API for its implementation**.
 4. **Create a mobile application for book search and personalized recommendations, integrating it
    with the recommendation system**.
