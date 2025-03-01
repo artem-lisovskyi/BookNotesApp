@@ -1,5 +1,4 @@
 # Book Notes – Book Recommendation System using Machine Learning
-=====================================================
 
 ## Introduction
 ---------------
@@ -73,10 +72,13 @@ to retrieve recommendations.
 
 ### Screenshots
 
-![Screenshot 1](img/booknotesapp1.png)
-![Screenshot 2](img/booknotesapp.png)
-![Screenshot 3](img/kindle-novels.png)
-![Screenshot 4](img/book-notes.png)
+<p align="center">
+  <img src="img/booknotesapp1.png" width="150" style="margin-right: 15px; display: inline-block;" alt="">
+  <img src="img/booknotesapp.png" width="150" style="margin-right: 15px; display: inline-block;" alt="">
+  <img src="img/kindle-novels.png" width="150" style="margin-right: 15px; display: inline-block;" alt="">
+  <img src="img/book-notes.png" width="150" style="display: inline-block;" alt="">
+</p>
+
 
 ## Future Work
 ---------------
